@@ -36,8 +36,10 @@ namespace knesset_app
         public string ReadParagraph(XElement p)
         {
             return string.Join("", (from e in p.Elements(w + "r")
-                                    select e.Element(w + "t").Value)).Trim();
+                                    let wt = e.Element(w + "t")
+                                    select wt != null ? wt.Value : ""));
         }
+
 
         public bool IsCustomXml(XElement el, string requiredElement)
         {
@@ -46,6 +48,7 @@ namespace knesset_app
 
         public bool ContainsCustomXml(XElement el, string requiredElement)
         {
+            if (IsCustomXml(el, requiredElement)) return true;
             return el.Elements(w + "customXml").Any(x => x.Attribute(w + "element").Value == requiredElement);
         }
 
@@ -104,7 +107,7 @@ namespace knesset_app
                             state = ProtocolState.Agenda;
                         break;
                     case ProtocolState.Agenda:
-                        if (IsCustomXml(el, "נושא"))
+                        if (IsCustomXml(el, "נושא") || IsCustomXml(el, "הצח") || IsCustomXml(el, "הלסי"))
                         {
                             state = ProtocolState.SubjectLong;
                         }
@@ -136,9 +139,12 @@ namespace knesset_app
                             foreach (var invitation in items)
                                 AddInvitation(ret, context, invitation);
                         }
-                        else if (ContainsCustomXml(el, "נושא"))
+                        else if (ContainsCustomXml(el, "נושא") || ContainsCustomXml(el, "הצח") || ContainsCustomXml(el, "הלסי"))
                         {
-                            ret.pr_title = ReadParagraph(el.Element(w + "customXml"));
+                            var titleElem = el.Element(w + "customXml");
+                            if (titleElem.Element(w + "customXml") != null)
+                                titleElem = titleElem.Element(w + "customXml");
+                            ret.pr_title = ReadParagraph(titleElem);
                             state = ProtocolState.Subject;
                         }
                         break;
