@@ -1,16 +1,8 @@
 ﻿using knesset_app.DBEntities;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace knesset_app
 {
@@ -20,9 +12,10 @@ namespace knesset_app
     public partial class AddProtocolWindow : Window
     {
 
-        internal Protocol protocol { get; set; }
+        internal Protocol Protocol { get; set; }
 
         KnessetContext context;
+        ProtocolFileParser fileParser;
 
         public AddProtocolWindow()
         {
@@ -30,33 +23,80 @@ namespace knesset_app
             OpenFileDialog ofd = new OpenFileDialog { Filter = "XML Filse|*.xml" };
             if (ofd.ShowDialog() == true)
             {
+                context = new KnessetContext();
+                Random r = new Random();
+                context.Database.Log = (s) =>
+                {
+                    if (r.Next(20) == 4) try
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                debugArea.Text = s;
+                            });
+                        }
+                        catch (Exception) { }
+                };
                 try
                 {
-                    context = new KnessetContext();
-                    LoadProtocolFile(ofd.FileName);
+                    fileParser = new ProtocolFileParser(ofd.FileName);
+                    Protocol = fileParser.Parse(context);
+                    DataContext = Protocol;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
-                    Close(); return;
                 }
             }
             else
             {
-                Close(); return;
+                Close();
             }
-            DataContext = protocol;
-        }
-
-        private void LoadProtocolFile(string fileName)
-        {
-            ProtocolFileParser p = new ProtocolFileParser(fileName);
-            protocol = p.Parse(context);
         }
 
         private void SaveProtocol(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("TO BE DONE!");
+            IsEnabled = false;
+            Committee c = context.Committees.Find(Protocol.c_name);
+            if (c == null)
+            {
+                c = new Committee { c_name = Protocol.c_name };
+                context.Committees.Add(c);
+            }
+            Protocol.committee = c;
+            context.Protocols.Add(Protocol);
+            Thread t = new Thread(() =>
+            {
+                try
+                {
+                    context.Configuration.AutoDetectChangesEnabled = false;
+                    context.Configuration.ValidateOnSaveEnabled = false;
+
+                    context.Persons.AddRange(fileParser.newPersons);
+                    context.Persences.AddRange(fileParser.newPresence);
+                    context.Invitations.AddRange(fileParser.newInvitations);
+                    context.Words.AddRange(fileParser.newWords);
+                    context.Paragraphs.AddRange(fileParser.newParagraphs);
+                    context.ParagraphWords.AddRange(fileParser.newParagraphWords);
+
+                    int updatedObjects = context.SaveChanges();
+                    MessageBox.Show(string.Format("Saved {0} objects successfully.", updatedObjects), "Saved Objects", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    Dispatcher.Invoke(() => { Close(); });
+                }
+                catch (Exception ex)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        IsEnabled = true;
+                    });
+                    System.IO.File.WriteAllText("exception.txt", ex.ToString());
+                    MessageBox.Show(ex.ToString());
+                }
+            })
+            {
+                IsBackground = true
+            };
+            t.Start();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace knesset_app.DBEntities
         [ForeignKey("pn_name")]
         public Person speaker { get; set; }
 
-        [ForeignKey("paragraph)")]
+        [InverseProperty("paragraph")]
         public ICollection<ParagraphWord> words { get; set; }
     }
 }

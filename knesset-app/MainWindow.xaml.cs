@@ -17,7 +17,7 @@ namespace knesset_app
         private void AddProtocol(object sender, RoutedEventArgs e)
         {
             var ap = new AddProtocolWindow();
-            if (ap.protocol != null)
+            if (ap.Protocol != null)
                 ap.ShowDialog();
         }
     }

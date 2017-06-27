@@ -10,10 +10,10 @@ namespace knesset_app.DBEntities
         [Key,MaxLength(50)]
         public string word { get; set; }
 
-        [InverseProperty("Word")]
+        [InverseProperty("WordObj")]
         public ICollection<WordInGroup> groups { get; set; }
 
-        [InverseProperty("Word")]
+        [InverseProperty("WordObj")]
         public ICollection<ParagraphWord> paragraphs { get; set; }
     }
 }

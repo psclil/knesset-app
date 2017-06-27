@@ -16,6 +16,6 @@ namespace knesset_app.DBEntities
         public WordsGroup wordsGroup { get; set; }
 
         [ForeignKey("word")]
-        public Word Word { get; set; }
+        public Word WordObj { get; set; }
     }
 }

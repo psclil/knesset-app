@@ -65,6 +65,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ParagraphReader.cs" />
     <Compile Include="ProtocolFileParser.cs" />
     <Page Include="AddProtocolWindow.xaml">
       <SubType>Designer</SubType>
