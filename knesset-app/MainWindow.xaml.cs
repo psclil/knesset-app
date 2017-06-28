@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows;
-using knesset_app.DBEntities;
+﻿using System.Windows;
+using Microsoft.Win32;
 
 namespace knesset_app
 {
@@ -16,9 +15,18 @@ namespace knesset_app
 
         private void AddProtocol(object sender, RoutedEventArgs e)
         {
-            var ap = new AddProtocolWindow();
-            if (ap.Protocol != null)
-                ap.ShowDialog();
+            OpenFileDialog ofd = new OpenFileDialog { Filter = "XML Filse|*.xml", Multiselect = true };
+            if (ofd.ShowDialog() == true)
+            {
+                foreach (string fname in ofd.FileNames)
+                {
+                    var ap = new AddProtocolWindow(fname);
+                    ap.Left = Left;
+                    ap.Top = Top;
+                    if (ap.Protocol != null)
+                        ap.ShowDialog();
+                }
+            }
         }
     }
 }

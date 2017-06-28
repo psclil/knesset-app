@@ -98,7 +98,15 @@ namespace knesset_app
                             state = ProtocolState.ProtocolInfo;
                             ret.pr_number = int.Parse(el.Element(w + "customXmlPr").Elements(w + "attr").First(x => x.Attribute(w + "name").Value == "Num").Attribute(w + "val").Value);
                             if (ret.pr_number == 0)
-                                ret.pr_number = int.Parse(Regex.Replace(el.Element(w + "p").Elements(w + "r").Last().Element(w + "t").Value, "[^\\d]", ""));
+                            {
+                                int tmp;
+                                string pNumString = (from r in el.Element(w + "p").Elements(w + "r")
+                                                     let str = r.Element(w + "t").Value.Trim()
+                                                     where Regex.IsMatch(str, "^\\d+$")
+                                                     select str).LastOrDefault() ?? "";
+                                if (int.TryParse(Regex.Replace(pNumString, "[^\\d]", ""), out tmp))
+                                    ret.pr_number = tmp;
+                            }
                             ret.pr_date = DateTime.ParseExact(el.Element(w + "customXmlPr").Elements(w + "attr").First(x => x.Attribute(w + "name").Value == "Date").Attribute(w + "val").Value, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                         }
                         break;
@@ -107,7 +115,7 @@ namespace knesset_app
                             state = ProtocolState.Agenda;
                         break;
                     case ProtocolState.Agenda:
-                        if (IsCustomXml(el, "נושא") || IsCustomXml(el, "הצח") || IsCustomXml(el, "הלסי"))
+                        if (IsSubject(el))
                         {
                             state = ProtocolState.SubjectLong;
                         }
@@ -127,6 +135,11 @@ namespace knesset_app
                             string content = ReadParagraph(el);
                             if (string.IsNullOrWhiteSpace(content) || content == "חברי הכנסת:")
                                 break;
+                            if (content.Contains("מוזמנים:"))
+                            {
+                                state = ProtocolState.Invitations;
+                                break;
+                            }
                             AddPersence(ret, context, content);
                         }
                         break;
@@ -139,7 +152,7 @@ namespace knesset_app
                             foreach (var invitation in items)
                                 AddInvitation(ret, context, invitation);
                         }
-                        else if (ContainsCustomXml(el, "נושא") || ContainsCustomXml(el, "הצח") || ContainsCustomXml(el, "הלסי"))
+                        else if (IsSubject(el))
                         {
                             var titleElem = el.Element(w + "customXml");
                             if (titleElem.Element(w + "customXml") != null)
@@ -177,6 +190,11 @@ namespace knesset_app
                         break;
                 }
             }
+        }
+
+        private bool IsSubject(XElement el)
+        {
+            return ContainsCustomXml(el, "נושא") || ContainsCustomXml(el, "הצח") || ContainsCustomXml(el, "הלסי");
         }
 
         private Person FindOrAddPerson(string name)

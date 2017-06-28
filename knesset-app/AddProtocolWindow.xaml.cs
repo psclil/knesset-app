@@ -14,20 +14,60 @@ namespace knesset_app
 
         internal Protocol Protocol { get; set; }
 
-        KnessetContext context;
         ProtocolFileParser fileParser;
 
-        public AddProtocolWindow()
+        KnessetContext context;
+
+        public AddProtocolWindow(string fileName)
         {
             InitializeComponent();
-            OpenFileDialog ofd = new OpenFileDialog { Filter = "XML Filse|*.xml" };
-            if (ofd.ShowDialog() == true)
+            try
             {
                 context = new KnessetContext();
-                Random r = new Random();
-                context.Database.Log = (s) =>
+                fileParser = new ProtocolFileParser(fileName);
+                Protocol = fileParser.Parse(context);
+                DataContext = Protocol;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void SaveProtocol(object sender, RoutedEventArgs e)
+        {
+            IsEnabled = false;
+            Protocol existing = context.Protocols.Find(Protocol.c_name, Protocol.pr_number);
+            if (existing != null && existing != Protocol)
+            {
+                var choise = MessageBox.Show("דריסת פרוטוקול קיים?", "הפרוטוקול קיים", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.No);
+                if (choise == MessageBoxResult.Yes)
                 {
-                    if (r.Next(20) == 4) try
+                    context.Protocols.Remove(existing);
+                    context.Protocols.Add(Protocol);
+                }
+                else if (choise == MessageBoxResult.No)
+                {
+                    Close();
+                    return;
+                }
+                else
+                {
+                    IsEnabled = true;
+                    return;
+                }
+            }
+            else
+            {
+                context.Protocols.Add(Protocol);
+            }
+            Thread t = new Thread(() =>
+            {
+                Random r = new Random();
+                context.Database.Log = (s) => // show some random data when performing DB access to show the user the app is doing something...
+                {
+                    if (r.Next(20) == 0)
+                        try
                         {
                             Dispatcher.Invoke(() =>
                             {
@@ -36,40 +76,20 @@ namespace knesset_app
                         }
                         catch (Exception) { }
                 };
-                try
-                {
-                    fileParser = new ProtocolFileParser(ofd.FileName);
-                    Protocol = fileParser.Parse(context);
-                    DataContext = Protocol;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-            else
-            {
-                Close();
-            }
-        }
 
-        private void SaveProtocol(object sender, RoutedEventArgs e)
-        {
-            IsEnabled = false;
-            Committee c = context.Committees.Find(Protocol.c_name);
-            if (c == null)
-            {
-                c = new Committee { c_name = Protocol.c_name };
-                context.Committees.Add(c);
-            }
-            Protocol.committee = c;
-            context.Protocols.Add(Protocol);
-            Thread t = new Thread(() =>
-            {
                 try
                 {
                     context.Configuration.AutoDetectChangesEnabled = false;
                     context.Configuration.ValidateOnSaveEnabled = false;
+
+                    Committee c = context.Committees.Find(Protocol.c_name);
+                    if (c == null)
+                    {
+                        c = new Committee { c_name = Protocol.c_name };
+                        context.Committees.Add(c);
+                    }
+                    Protocol.committee = c;
+                    context.Protocols.Add(Protocol);
 
                     context.Persons.AddRange(fileParser.newPersons);
                     context.Persences.AddRange(fileParser.newPresence);
@@ -79,9 +99,12 @@ namespace knesset_app
                     context.ParagraphWords.AddRange(fileParser.newParagraphWords);
 
                     int updatedObjects = context.SaveChanges();
-                    MessageBox.Show(string.Format("Saved {0} objects successfully.", updatedObjects), "Saved Objects", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    Dispatcher.Invoke(() => { Close(); });
+                    //MessageBox.Show(string.Format("Saved {0} objects successfully.", updatedObjects), "Saved Objects", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Dispatcher.Invoke(() =>
+                    {
+                        DialogResult = true;
+                        Close();
+                    });
                 }
                 catch (Exception ex)
                 {

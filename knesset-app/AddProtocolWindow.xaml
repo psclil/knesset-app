@@ -26,14 +26,24 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="8"/>
         </Grid.RowDefinitions>
-        <Button Content="שמירה" HorizontalAlignment="Right" Margin="0" Grid.Row="6" Width="75" Click="SaveProtocol" Grid.Column="1"/>
+        <Button Content="שמירה" HorizontalAlignment="Right" Margin="0" Grid.Row="6" Width="75" Click="SaveProtocol" Grid.Column="1" AutomationProperties.AccessKey="S" IsDefault="True"/>
         <Label Content="ועדה" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label Content="תאריך" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2"/>
         <Label Content="מס. פרוטוקול" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="3"/>
         <Label Content="כותרת" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="4"/>
         <TextBox Grid.Column="1" Text="{Binding c_name}" MaxLength="45" Grid.Row="1" />
         <DatePicker Grid.Column="1" Grid.Row="2" SelectedDate="{ Binding pr_date }" />
-        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding pr_number}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding pr_number}">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{ Binding pr_number }" Value="0">
+                            <Setter Property="Foreground" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
         <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding pr_title}" MaxLength="200" TextWrapping="WrapWithOverflow"/>
         <TextBlock Grid.ColumnSpan="2" Grid.Row="5" Name="debugArea" TextAlignment="Left" FlowDirection="LeftToRight"></TextBlock>
 
