@@ -46,6 +46,5 @@
         </TextBox>
         <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding pr_title}" MaxLength="200" TextWrapping="WrapWithOverflow"/>
         <TextBlock Grid.ColumnSpan="2" Grid.Row="5" Name="debugArea" TextAlignment="Left" FlowDirection="LeftToRight"></TextBlock>
-
     </Grid>
 </Window>

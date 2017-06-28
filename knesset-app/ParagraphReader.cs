@@ -4,24 +4,24 @@ using System.Text.RegularExpressions;
 
 namespace knesset_app
 {
+    /**
+     * a class to parse protocols in office xml format
+     */
     public class ParagraphReader
     {
-        public Regex WordStartChars { get; set; }
-        public Regex WordContinueChars { get; set; }
+        public Regex WordStartChars { get; set; } // a regex to find new words start
+        public Regex WordContinueChars { get; set; } // a regex to check if still in word or the word has ended
 
         public ParagraphReader()
         {
-            // todo: add more class settings in the future...
-            WordStartChars = new Regex("[א-ת0-9a-zA-Z]", RegexOptions.Compiled);
-            WordContinueChars = new Regex("[א-ת0-9a-zA-Z\\\"]", RegexOptions.Compiled);
+            WordStartChars = new Regex("[א-ת0-9a-zA-Z]", RegexOptions.Compiled); // initialize the regular expressions,
+            WordContinueChars = new Regex("[א-ת0-9a-zA-Z\\\"]", RegexOptions.Compiled); // though the user might choose to change them.
         }
 
-        private enum ReadState
-        {
-            NotInWord,
-            Word
-        }
-
+        /**
+         * read a paragraph and run an action provided by the user for each word
+         * or another action for the whitespace chars in between words.
+         */
         public void Read(string paragraphContent, Action<string> wordHandler, Action<string> fillerHandler)
         {
             ReadState state = ReadState.NotInWord;
@@ -34,9 +34,10 @@ namespace knesset_app
                     case ReadState.NotInWord:
                         if (WordStartChars.IsMatch(curr))
                         {
+                            // we're not in a word but a word is about to start.
                             if (buffer.Length > 0)
                             {
-                                fillerHandler(buffer.ToString());
+                                fillerHandler(buffer.ToString()); // activate the callback for the current filler
                                 buffer.Clear();
                             }
                             state = ReadState.Word;
@@ -45,9 +46,10 @@ namespace knesset_app
                     case ReadState.Word:
                         if (!WordContinueChars.IsMatch(curr))
                         {
+                            // we're in a word but it ended.
                             if (buffer.Length > 0)
                             {
-                                wordHandler(buffer.ToString());
+                                wordHandler(buffer.ToString()); // activate the callback for the current word
                                 buffer.Clear();
                             }
                             state = ReadState.NotInWord;
@@ -56,6 +58,21 @@ namespace knesset_app
                 }
                 buffer.Append(curr);
             }
+            if (buffer.Length > 0)
+            {
+                // handle the last part of the paragraph
+                if (state == ReadState.NotInWord)
+                    fillerHandler(buffer.ToString());
+                else
+                    wordHandler(buffer.ToString());
+            }
+        }
+
+        private enum ReadState
+        // just an helper to enable paragraph reading state machine
+        {
+            NotInWord,
+            Word
         }
     }
 }
