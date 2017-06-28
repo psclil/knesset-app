@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "knesset-app", "knesset-app\knesset-app.csproj", "{09100A72-0A16-491A-9B79-6C38C7EB2101}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Doc2Xml", "Doc2Xml\Doc2Xml.csproj", "{ABC8F70C-ACE6-425D-BAC3-ED1591557AEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{09100A72-0A16-491A-9B79-6C38C7EB2101}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09100A72-0A16-491A-9B79-6C38C7EB2101}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09100A72-0A16-491A-9B79-6C38C7EB2101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC8F70C-ACE6-425D-BAC3-ED1591557AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC8F70C-ACE6-425D-BAC3-ED1591557AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC8F70C-ACE6-425D-BAC3-ED1591557AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC8F70C-ACE6-425D-BAC3-ED1591557AEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
