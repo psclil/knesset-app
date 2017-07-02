@@ -1,5 +1,4 @@
 ﻿using knesset_app.DBEntities;
-using Microsoft.Win32;
 using System;
 using System.Threading;
 using System.Windows;
@@ -9,7 +8,7 @@ namespace knesset_app
     /// <summary>
     /// Interaction logic for AddProtocolWindow.xaml
     /// </summary>
-    public partial class AddProtocolWindow : Window
+    public sealed partial class AddProtocolWindow : Window, IDisposable
     {
 
         internal Protocol Protocol { get; set; }
@@ -40,13 +39,6 @@ namespace knesset_app
                 MessageBox.Show(ex.ToString(), fileName, MessageBoxButton.OK, MessageBoxImage.Asterisk);
 
             }
-            Closing += (s, e) =>
-            {
-                // when the window is closing try to make the system dispose the context object.
-                try { context.Dispose(); }
-                // though it might not work each time depending on object state, etc...
-                catch (Exception) { }
-            };
         }
 
         private void SaveProtocol(object sender, RoutedEventArgs e)
@@ -151,6 +143,12 @@ namespace knesset_app
                 IsBackground = true // if app closes also kill the thread.
             };
             t.Start(); // start the save thread
+        }
+
+        public void Dispose()
+        {
+            // we need to dispose the context because we're using it globally in the class and not with a using clause
+            ((IDisposable)context).Dispose();
         }
     }
 }

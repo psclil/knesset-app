@@ -21,13 +21,16 @@ namespace knesset_app
             {
                 foreach (string fname in ofd.FileNames)
                 {
-                    var ap = new AddProtocolWindow(fname)
+                    using (
+                        var ap = new AddProtocolWindow(fname)
+                        {
+                            Left = Left, // align to the current window each time
+                            Top = Top // instead of random placement
+                        })
                     {
-                        Left = Left, // align to the current window each time
-                        Top = Top // instead of random placement
-                    };
-                    if (ap.Protocol != null)
-                        ap.ShowDialog(); // only show the window if protocol parsine succeded
+                        if (ap.Protocol != null)
+                            ap.ShowDialog(); // only show the window if protocol parsine succeded
+                    }
                 }
             }
         }
