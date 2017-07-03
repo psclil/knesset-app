@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:knesset_app"
         xmlns:db="clr-namespace:knesset_app.DBEntities"
         mc:Ignorable="d"
-        Title="AddProtocolWindow" Height="600" Width="600" FlowDirection="RightToLeft" FontSize="20">
+        Title="הוספת פרוטוקול" Style="{StaticResource KnessetWindow}">
     <Window.DataContext>
         <db:Protocol/>
     </Window.DataContext>

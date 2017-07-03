@@ -34,5 +34,10 @@ namespace knesset_app
                 }
             }
         }
+
+        private void ShowStatistics(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

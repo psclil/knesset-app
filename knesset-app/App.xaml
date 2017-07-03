@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:knesset_app"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="KnessetWindow" TargetType="Window">
+            <Setter Property="FlowDirection" Value="RightToLeft"/>
+            <Setter Property="Width" Value="600"/>
+            <Setter Property="Height" Value="600"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
     </Application.Resources>
 </Application>

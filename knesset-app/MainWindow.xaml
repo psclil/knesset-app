@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:knesset_app"
         mc:Ignorable="d"
-        Title="Knesset App" Height="350" Width="525" FlowDirection="RightToLeft">
+        Style="{StaticResource KnessetWindow}"
+        Title="Knesset App" Height="350" Width="800" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -23,6 +24,6 @@
         <Button Content="חיפוש" Grid.Column="1" Margin="10" Grid.Row="1"/>
         <Button Content="יצירת אינדקס" Grid.Column="2" Margin="10" Grid.Row="1"/>
         <Button Content="טעינת פרוטוקול" Grid.Column="3" Margin="10" Grid.Row="1" Click="AddProtocol"/>
-        <Button Content="סטטיסטיקות" Grid.Column="4" Margin="10" Grid.Row="1"/>
+        <Button Content="סטטיסטיקות" Grid.Column="4" Margin="10" Grid.Row="1" Click="ShowStatistics"/>
     </Grid>
 </Window>
