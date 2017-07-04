@@ -37,7 +37,8 @@ namespace knesset_app
 
         private void ShowStatistics(object sender, RoutedEventArgs e)
         {
-
+            StatisticsWindow statsWin = new StatisticsWindow();
+            statsWin.ShowDialog();
         }
     }
 }

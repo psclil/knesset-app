@@ -1,0 +1,26 @@
+﻿<Window x:Class="knesset_app.PresenceStatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:knesset_app"
+        mc:Ignorable="d"
+        Title="נוכחות בועדות" Style="{StaticResource KnessetWindow}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="8"/>
+        </Grid.RowDefinitions>
+        <ComboBox Grid.Row="2"/>
+        <Label Grid.Row="1">בחירת ועדה:</Label>
+        <DataGrid Grid.Row="3" Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="50*" Header="חבר הועדה"  />
+                <DataGridTextColumn Width="50*" Header="נוכחות" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

@@ -16,5 +16,17 @@ namespace knesset_app
         {
 
         }
+
+        private void WordFrequencies(object sender, RoutedEventArgs e)
+        {
+            WordFrequenciesWindow freqWindow = new WordFrequenciesWindow();
+            freqWindow.ShowDialog();
+        }
+
+        private void Presence(object sender, RoutedEventArgs e)
+        {
+            PresenceStatisticsWindow presenceWindow = new PresenceStatisticsWindow();
+            presenceWindow.ShowDialog();
+        }
     }
 }

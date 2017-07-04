@@ -1,0 +1,32 @@
+﻿<Window x:Class="knesset_app.WordFrequenciesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:knesset_app"
+        mc:Ignorable="d"
+        Title="שכיחויות מילים" Style="{StaticResource KnessetWindow}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="8"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+        </Grid.ColumnDefinitions>
+        <ComboBox Grid.Row="2"/>
+        <Label Grid.Row="1">סינון ועדה:</Label>
+        <ComboBox Grid.Row="2" Grid.Column="1"/>
+        <Label Grid.Row="1" Grid.Column="1">סינון דובר:</Label>
+        <DataGrid Grid.Row="3" Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="50*" Header="מילה"  />
+                <DataGridTextColumn Width="50*" Header="שכיחות" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
