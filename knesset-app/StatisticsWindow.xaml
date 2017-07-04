@@ -47,12 +47,12 @@
         <Button Grid.Row="7" Margin="10" Click="WordFrequencies">שכיחויות מילים</Button>
         <Button Grid.Column="1" Grid.Row="7" Margin="10" Click="Presence">נוכחות משתתפים</Button>
 
-        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding NumProtocols}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding SpeakersPerProtocol}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ParagraphsPerProtocol}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding ParagraphsPerProtocolSpeaker}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding WordsPerProtocol}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="6" Text="{Binding WordsPerParagraph}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding NumProtocols, StringFormat={}{0:G0}}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding SpeakersPerProtocol, StringFormat={}{0:N}}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ParagraphsPerProtocol, StringFormat={}{0:N}}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding ParagraphsPerProtocolSpeaker, StringFormat={}{0:N}}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding WordsPerProtocol, StringFormat={}{0:N}}"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="6" Text="{Binding WordsPerParagraph, StringFormat={}{0:N}}"></TextBlock>
         
     </Grid>
 </Window>
