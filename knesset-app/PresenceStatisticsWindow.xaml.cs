@@ -1,4 +1,5 @@
-﻿using System;
+﻿using knesset_app.DBEntities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,24 @@ namespace knesset_app
     /// </summary>
     public partial class PresenceStatisticsWindow : Window
     {
+        PresenceStatisticsData data;
+
         public PresenceStatisticsWindow()
         {
             InitializeComponent();
+        }
+
+        private void InitData(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                data = new PresenceStatisticsData();
+                DataContext = data;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 }

@@ -66,6 +66,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ParagraphReader.cs" />
+    <Compile Include="PresenceStatisticsData.cs" />
+    <Compile Include="PresenceStatisticsItem.cs" />
     <Compile Include="PresenceStatisticsWindow.xaml.cs">
       <DependentUpon>PresenceStatisticsWindow.xaml</DependentUpon>
     </Compile>

@@ -14,7 +14,7 @@ namespace knesset_app.DBEntities
         public DbSet<WordsGroup> WordsGroups { get; set; }
         public DbSet<WordInGroup> WordInGroups { get; set; }
         public DbSet<Word> Words { get; set; }
-        public DbSet<Presence> Persences { get; set; }
+        public DbSet<Presence> Persence { get; set; }
         public DbSet<Phrase> Phrases { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<ParagraphWord> ParagraphWords { get; set; }

@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:knesset_app"
         mc:Ignorable="d"
-        Title="נוכחות בועדות" Style="{StaticResource KnessetWindow}">
+        Title="נוכחות בועדות" Style="{StaticResource KnessetWindow}" Loaded="InitData">
+    <Window.DataContext>
+        <local:PresenceStatisticsData/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="8"/>
@@ -14,12 +17,13 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="8"/>
         </Grid.RowDefinitions>
-        <ComboBox Grid.Row="2"/>
+        <ComboBox Grid.Row="2" ItemsSource="{Binding AllCommittees}" SelectedItem="{Binding c_name,Mode=TwoWay}"/>
         <Label Grid.Row="1">בחירת ועדה:</Label>
-        <DataGrid Grid.Row="3" Grid.ColumnSpan="2">
+        <DataGrid Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Results}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="50*" Header="חבר הועדה"  />
-                <DataGridTextColumn Width="50*" Header="נוכחות" />
+                <DataGridTextColumn Width="50*" Header="חבר הועדה" Binding="{Binding pn_name}" />
+                <DataGridTextColumn Width="50*" Header="נוכחות" Binding="{Binding Presence, StringFormat={}{0:0.00\\%}}">
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

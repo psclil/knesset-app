@@ -111,7 +111,7 @@ namespace knesset_app
                     context.Protocols.Add(Protocol); 
 
                     context.Persons.AddRange(fileParser.newPersons);
-                    context.Persences.AddRange(fileParser.newPresence);
+                    context.Persence.AddRange(fileParser.newPresence);
                     context.Invitations.AddRange(fileParser.newInvitations);
                     context.Words.AddRange(fileParser.newWords);
                     context.Paragraphs.AddRange(fileParser.newParagraphs);

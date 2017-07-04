@@ -23,8 +23,9 @@ namespace knesset_app
                 using (var context = new KnessetContext())
                 {
                     context.Database.Log = Console.WriteLine;
-                    res.NumProtocols = context.Protocols.Count();
+                    int numWordsSpoken = context.ParagraphWords.Count();
                     int numParagraphs = context.Paragraphs.Count();
+                    res.NumProtocols = context.Protocols.Count();
                     res.ParagraphsPerProtocol = (float)numParagraphs / res.NumProtocols;
                     /*
                      * calculate speakers by protocol
@@ -38,11 +39,10 @@ namespace knesset_app
                      */
                     res.SpeakersPerProtocol = (float)context.Paragraphs
                                                         .Where(x => x.pn_pg_number == 1)
-                                                        .GroupBy(x => x.protocol)
+                                                        .GroupBy(x => new { x.c_name,x.pr_number })
                                                         .Select(r => r.Count())
                                                         .Average();
                     res.ParagraphsPerProtocolSpeaker = res.ParagraphsPerProtocol / res.SpeakersPerProtocol;
-                    int numWordsSpoken = context.ParagraphWords.Count();
                     res.WordsPerProtocol = (float)numWordsSpoken / res.NumProtocols;
                     res.WordsPerParagraph = (float)numWordsSpoken / numParagraphs;
                 }
