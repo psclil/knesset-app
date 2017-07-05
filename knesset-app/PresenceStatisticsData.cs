@@ -42,8 +42,8 @@ namespace knesset_app
                         context.Persence
                         .Where(p => p.c_name == _c_name)
                         .GroupBy(p => p.pn_name)
-                        .Select(grp => new PresenceStatisticsItem { pn_name = grp.Key, Presence = 100f * grp.Count() / numProtocols })
-                        .OrderByDescending(x=>x.Presence)
+                        .Select(grp => new PresenceStatisticsItem { pn_name = grp.Key, Presence = (float)grp.Count() / numProtocols })
+                        .OrderByDescending(x => x.Presence)
                         .ToList()
                     );
             }
