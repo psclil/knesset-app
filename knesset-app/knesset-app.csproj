@@ -76,9 +76,11 @@
     <Compile Include="StatisticsWindow.xaml.cs">
       <DependentUpon>StatisticsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WordFrequenciesData.cs" />
     <Compile Include="WordFrequenciesWindow.xaml.cs">
       <DependentUpon>WordFrequenciesWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WordFrequency.cs" />
     <Page Include="AddProtocolWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -17,7 +17,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="8"/>
         </Grid.RowDefinitions>
-        <ComboBox Grid.Row="2" ItemsSource="{Binding AllCommittees}" SelectedItem="{Binding c_name,Mode=TwoWay}"/>
+        <ComboBox Grid.Row="2" ItemsSource="{Binding AllCommittees}" SelectedItem="{Binding c_name,Mode=TwoWay}" IsTextSearchEnabled="True"/>
         <Label Grid.Row="1">בחירת ועדה:</Label>
         <DataGrid Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Results}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
