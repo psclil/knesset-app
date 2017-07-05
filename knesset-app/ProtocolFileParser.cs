@@ -150,7 +150,7 @@ namespace knesset_app
                             isInvitationsTableRtl = el.Descendants(w + "bidiVisual").Any();
                             var items = from tr in el.Elements(w + "tr")
                                         select ReadParagraph((isInvitationsTableRtl ? tr.Elements(w + "tc").First() : tr.Elements(w + "tc").Last()).Element(w + "p"));
-                            foreach (var invitation in items)
+                            foreach (var invitation in items.Distinct())
                                 newInvitations.Add(new Invitation { person = FindOrAddPerson(invitation), protocol = ret });
                         }
                         else if (IsSubject(el))
@@ -197,6 +197,10 @@ namespace knesset_app
                     case ProtocolState.Finished:
                         break;
                 }
+            }
+            if (state != ProtocolState.Finished && newParagraphs.Count==0)
+            {
+                throw new Exception(string.Format("Protocol parsing failed, did not pass state {0}", state));
             }
         }
 

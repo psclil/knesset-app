@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 
 namespace knesset_app
 {
@@ -10,6 +11,8 @@ namespace knesset_app
     /// </summary>
     public sealed partial class AddProtocolWindow : Window, IDisposable
     {
+
+        public static bool AutoSaveAll { get; set; } = false;
 
         internal Protocol Protocol { get; set; }
 
@@ -44,13 +47,15 @@ namespace knesset_app
         private void SaveProtocol(object sender, RoutedEventArgs e)
         {
             IsEnabled = false; // disable the ui while saving the protocol so that the user does not change anything in the meanwhile.
+            if (sender != null)
+                AutoSaveAll = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl); // when batch importing sometimes it's easyer if save run automatically.
             Protocol existing = context.Protocols.Find(Protocol.c_name, Protocol.pr_number); // check to see if this protocol alerady exists in the db
             if (existing != null && existing != Protocol)
             {
-                var choise = MessageBox.Show(
+                var choise = !AutoSaveAll ? MessageBox.Show(
                     "דריסת פרוטוקול קיים?",
                     "הפרוטוקול קיים",
-                    MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.No);
+                    MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.No) : MessageBoxResult.No;
                 if (choise == MessageBoxResult.Yes)
                 {
                     // delete the existing protocol, because of foreign keys all relevant data will also be deleted
@@ -108,7 +113,7 @@ namespace knesset_app
 
                     // Add all objects to the context local store:
 
-                    context.Protocols.Add(Protocol); 
+                    context.Protocols.Add(Protocol);
 
                     context.Persons.AddRange(fileParser.newPersons);
                     context.Persence.AddRange(fileParser.newPresence);
@@ -149,6 +154,14 @@ namespace knesset_app
         {
             // we need to dispose the context because we're using it globally in the class and not with a using clause
             ((IDisposable)context).Dispose();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Protocol.pr_number > 0 && AutoSaveAll)
+            {
+                SaveProtocol(null, null);
+            }
         }
     }
 }

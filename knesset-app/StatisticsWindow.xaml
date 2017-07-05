@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:knesset_app"
         mc:Ignorable="d"
         Style="{StaticResource KnessetWindow}"
-        Title="סטטיסטיקות" Loaded="InitStatistics">
+        Title="סטטיסטיקות" Loaded="InitStatistics" ResizeMode="NoResize">
     <Window.DataContext>
         <local:GeneralStatisticsResult/>
     </Window.DataContext>
