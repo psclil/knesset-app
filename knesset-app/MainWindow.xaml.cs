@@ -44,5 +44,11 @@ namespace knesset_app
             StatisticsWindow statsWin = new StatisticsWindow();
             statsWin.ShowDialog();
         }
+
+        private void CreateIndex(object sender, RoutedEventArgs e)
+        {
+            CreateIndexWindow createWin = new CreateIndexWindow();
+            createWin.ShowDialog();
+        }
     }
 }
