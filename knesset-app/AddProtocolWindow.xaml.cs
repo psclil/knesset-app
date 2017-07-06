@@ -39,7 +39,8 @@ namespace knesset_app
             {
                 // if there was a problem show a message to the user, protocol will be null and the user
                 // of this window will not show it.
-                MessageBox.Show(ex.ToString(), fileName, MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                if (!AutoSaveAll)
+                    MessageBox.Show(ex.ToString(), fileName, MessageBoxButton.OK, MessageBoxImage.Asterisk);
 
             }
         }
