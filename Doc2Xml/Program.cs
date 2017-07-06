@@ -36,12 +36,15 @@ namespace Doc2Xml
                 try
                 {
                     Console.Error.Write(fname);
-                    Document d = app.Documents.Open(FileName: fname, ReadOnly: true);
-                    object fileFormat = WdSaveFormat.wdFormatFlatXML;
-                    object newFileName = fname.Replace(".doc", "") + ".xml";
-                    d.SaveAs2(FileName: newFileName, FileFormat: fileFormat);
+                    string newFileName = fname.Replace(".doc", "") + ".xml";
+                    if (!File.Exists(newFileName))
+                    {
+                        Document d = app.Documents.Open(FileName: fname, ReadOnly: true);
+                        object fileFormat = WdSaveFormat.wdFormatFlatXML;
+                        d.SaveAs2(FileName: newFileName, FileFormat: fileFormat);
+                        d.Close(WdSaveOptions.wdDoNotSaveChanges);
+                    }
                     Console.Error.WriteLine(" --> {0}", newFileName);
-                    d.Close(WdSaveOptions.wdDoNotSaveChanges);
                 }
                 catch (Exception ex)
                 {
