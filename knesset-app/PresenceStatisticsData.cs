@@ -42,7 +42,7 @@ namespace knesset_app
                         context.Persence
                         .Where(p => p.c_name == _c_name)
                         .GroupBy(p => p.pn_name)
-                        .Select(grp => new PresenceStatisticsItem { pn_name = grp.Key, Presence = (float)grp.Count() / numProtocols })
+                        .Select(grp => new PresenceStatisticsItem { pn_name = grp.Key, Presence = (float)grp.Count() / numProtocols, TimesPresent = grp.Count() })
                         .OrderByDescending(x => x.Presence)
                         .ToList()
                     );
@@ -64,7 +64,7 @@ namespace knesset_app
         {
             using (KnessetContext context = new KnessetContext())
             {
-                AllCommittees = context.Committees.Select(x => x.c_name).ToList();
+                AllCommittees = context.Committees.OrderBy(x => x.c_name).Select(x => x.c_name).ToList();
             }
         }
 

@@ -42,6 +42,7 @@
                         </ItemContainerTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTextColumn Width="150" Header="פעמים שנכח" Binding="{Binding TimesPresent,StringFormat={}{0:N0}}"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

@@ -91,6 +91,7 @@ namespace knesset_app
                     .Select(x => new WordFrequency { Word = x.Key, Absolute = x.Count(), Frequency = (float)x.Count() / total })
                     .ToList()
                     .OrderByDescending(x => x.Absolute)
+                    .Take(10000)
                     .ToList());
             }
         }
