@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Win32;
+using System.Windows.Input;
 
 namespace knesset_app
 {
@@ -15,6 +16,9 @@ namespace knesset_app
 
         private void AddProtocol(object sender, RoutedEventArgs e)
         {
+            // let the user batch load protocols with auto saving if he presses Ctrl while clicking the add protocol window
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                AddProtocolWindow.AutoSaveAll = true;
             // lets the user select multiple xml files, then for each of them show the add protocol window to edit/save/cancel...
             OpenFileDialog ofd = new OpenFileDialog { Filter = "XML Filse|*.xml", Multiselect = true };
             if (ofd.ShowDialog() == true)
@@ -39,6 +43,12 @@ namespace knesset_app
         {
             StatisticsWindow statsWin = new StatisticsWindow();
             statsWin.ShowDialog();
+        }
+
+        private void CreateIndex(object sender, RoutedEventArgs e)
+        {
+            CreateIndexWindow createWin = new CreateIndexWindow();
+            createWin.ShowDialog();
         }
     }
 }

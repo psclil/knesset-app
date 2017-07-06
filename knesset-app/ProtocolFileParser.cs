@@ -128,6 +128,12 @@ namespace knesset_app
                                 state = ProtocolState.Invitations;
                                 break;
                             }
+                            else if (IsSubject(el))
+                            {
+                                // no invitations
+                                state = ReadSubject(ret, el);
+                                break;
+                            }
                             string content = ReadParagraph(el);
                             if (string.IsNullOrWhiteSpace(content) || content == "חברי הכנסת:")
                                 break;
@@ -138,7 +144,9 @@ namespace knesset_app
                                 break;
                             }
                             // if this is not a special line we got a presence to add.
-                            newPresence.Add(new Presence { person = FindOrAddPerson(content), protocol = ret });
+                            var person = FindOrAddPerson(content);
+                            if (!newPresence.Any(x=>x.person==person))
+                            newPresence.Add(new Presence { person = person, protocol = ret });
                         }
                         break;
                     case ProtocolState.Invitations:
@@ -150,18 +158,14 @@ namespace knesset_app
                             isInvitationsTableRtl = el.Descendants(w + "bidiVisual").Any();
                             var items = from tr in el.Elements(w + "tr")
                                         select ReadParagraph((isInvitationsTableRtl ? tr.Elements(w + "tc").First() : tr.Elements(w + "tc").Last()).Element(w + "p"));
-                            foreach (var invitation in items)
+                            foreach (var invitation in items.Distinct())
                                 newInvitations.Add(new Invitation { person = FindOrAddPerson(invitation), protocol = ret });
                         }
                         else if (IsSubject(el))
                         {
                             // after the invitations table we go on reading until we reach the header before the protocol starts
                             // no we read the protocol title.
-                            var titleElem = el.Element(w + "customXml");
-                            if (titleElem.Element(w + "customXml") != null)
-                                titleElem = titleElem.Element(w + "customXml");
-                            ret.pr_title = ReadParagraph(titleElem);
-                            state = ProtocolState.Subject;
+                            state = ReadSubject(ret, el);
                         }
                         break;
                     case ProtocolState.Subject:
@@ -198,6 +202,23 @@ namespace knesset_app
                         break;
                 }
             }
+            if (state != ProtocolState.Finished && newParagraphs.Count == 0)
+            {
+                throw new Exception(string.Format("Protocol parsing failed, did not pass state {0}", state));
+            }
+        }
+
+        private ProtocolState ReadSubject(Protocol ret, XElement el)
+        {
+            ProtocolState state;
+            var titleElem = el.Element(w + "customXml");
+            if (titleElem.Element(w + "customXml") != null)
+                titleElem = titleElem.Element(w + "customXml");
+            ret.pr_title = ReadParagraph(titleElem);
+            if (ret.pr_title.Length > 200)
+                ret.pr_title = ret.pr_title.Substring(0, 200);
+            state = ProtocolState.Subject;
+            return state;
         }
 
         private enum ProtocolState
@@ -299,7 +320,9 @@ namespace knesset_app
         //      parse metadata from the document header, currently only the committee name
         private static void ParseHeaderMetadata(Protocol ret, XElement[] docHeader)
         {
-            ret.c_name = docHeader[0].Element(w + "r").Element(w + "t").Value;
+            ret.c_name = docHeader[0].Element(w + "r").Element(w + "t").Value.Trim();
+            if (ret.c_name.Length > 45)
+                throw new Exception("Committee name unsupported (>45 chars)");
         }
 
         //      a small helper to read all the text parts of a paragraph (or elements with the same stracture or elem>w:r>w:t>text)

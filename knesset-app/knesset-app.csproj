@@ -65,7 +65,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CreateIndexWindow.xaml.cs">
+      <DependentUpon>CreateIndexWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ParagraphReader.cs" />
+    <Compile Include="PresenceStatisticsData.cs" />
+    <Compile Include="PresenceStatisticsItem.cs" />
     <Compile Include="PresenceStatisticsWindow.xaml.cs">
       <DependentUpon>PresenceStatisticsWindow.xaml</DependentUpon>
     </Compile>
@@ -74,10 +79,16 @@
     <Compile Include="StatisticsWindow.xaml.cs">
       <DependentUpon>StatisticsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WordFrequenciesData.cs" />
     <Compile Include="WordFrequenciesWindow.xaml.cs">
       <DependentUpon>WordFrequenciesWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WordFrequency.cs" />
     <Page Include="AddProtocolWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CreateIndexWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

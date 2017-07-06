@@ -10,5 +10,13 @@
             <Setter Property="Height" Value="600"/>
             <Setter Property="FontSize" Value="20"/>
         </Style>
+        <Style x:Key="ComboActionBtn" TargetType="Button">
+            <Setter Property="Padding" Value="4 0"/>
+            <Setter Property="Margin" Value="8 0 0 0"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="ComboDeleteBtn" TargetType="Button" BasedOn="{StaticResource ComboActionBtn}">
+            <Setter Property="Foreground" Value="Red"></Setter>
+        </Style>
     </Application.Resources>
 </Application>

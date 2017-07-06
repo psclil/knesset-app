@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:knesset_app"
         xmlns:db="clr-namespace:knesset_app.DBEntities"
         mc:Ignorable="d"
-        Title="הוספת פרוטוקול" Style="{StaticResource KnessetWindow}">
+        Title="הוספת פרוטוקול" Style="{StaticResource KnessetWindow}"
+        Loaded="Window_Loaded">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="HorizontalAlignment" Value="Center"/>

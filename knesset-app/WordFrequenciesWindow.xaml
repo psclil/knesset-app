@@ -4,8 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:knesset_app"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="שכיחויות מילים" Style="{StaticResource KnessetWindow}">
+    <Window.DataContext>
+        <local:WordFrequenciesData/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="8"/>
@@ -18,14 +22,15 @@
             <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Row="2"/>
+        <ComboBox Grid.Row="2" SelectedItem="{Binding c_name,Mode=TwoWay}" ItemsSource="{Binding AllCommittees}" IsTextSearchEnabled="True" IsEditable="True" />
         <Label Grid.Row="1">סינון ועדה:</Label>
-        <ComboBox Grid.Row="2" Grid.Column="1"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllSpeakers}" SelectedItem="{Binding pn_name,Mode=TwoWay}" IsTextSearchEnabled="True" IsEditable="True"/>
         <Label Grid.Row="1" Grid.Column="1">סינון דובר:</Label>
-        <DataGrid Grid.Row="3" Grid.ColumnSpan="2">
+        <DataGrid Grid.Row="3" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding Results}">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="50*" Header="מילה"  />
-                <DataGridTextColumn Width="50*" Header="שכיחות" />
+                <DataGridTextColumn Width="50*" Header="מילה" Binding="{Binding Word}" />
+                <DataGridTextColumn Width="25*" Header="שכיחות" Binding="{Binding Frequency,StringFormat={}{0:0.00%}}" />
+                <DataGridTextColumn Width="25*" Header="מופעים" Binding="{Binding Absolute,StringFormat={}{0:N0}}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
