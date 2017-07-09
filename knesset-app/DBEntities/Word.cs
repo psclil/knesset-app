@@ -11,9 +11,9 @@ namespace knesset_app.DBEntities
         public string word { get; set; }
 
         [InverseProperty("WordObj")]
-        public ICollection<WordInGroup> groups { get; set; }
+        public virtual ICollection<WordInGroup> groups { get; set; }
 
         [InverseProperty("WordObj")]
-        public ICollection<ParagraphWord> paragraphs { get; set; }
+        public virtual ICollection<ParagraphWord> paragraphs { get; set; }
     }
 }

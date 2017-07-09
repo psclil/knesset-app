@@ -32,6 +32,6 @@ namespace knesset_app.DBEntities
         public Person speaker { get; set; }
 
         [InverseProperty("paragraph")]
-        public ICollection<ParagraphWord> words { get; set; }
+        public virtual ICollection<ParagraphWord> words { get; set; }
     }
 }

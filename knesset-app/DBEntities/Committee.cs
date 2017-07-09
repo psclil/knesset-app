@@ -12,6 +12,6 @@ namespace knesset_app.DBEntities
         public string c_name { get; set; }
 
         [InverseProperty("committee")]
-        public ICollection<Protocol> protocols { get; set; }
+        public virtual ICollection<Protocol> protocols { get; set; }
     }
 }

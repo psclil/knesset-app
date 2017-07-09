@@ -25,12 +25,12 @@ namespace knesset_app.DBEntities
         public Committee committee { get; set; }
 
         [InverseProperty("protocol")]
-        public ICollection<Paragraph> paragraphs { get; set; }
+        public virtual ICollection<Paragraph> paragraphs { get; set; }
 
         [InverseProperty("protocol")]
-        public ICollection<Presence> persence { get; set; }
+        public virtual ICollection<Presence> persence { get; set; }
 
         [InverseProperty("protocol")]
-        public ICollection<Invitation> invitations { get; set; }
+        public virtual ICollection<Invitation> invitations { get; set; }
     }
 }
