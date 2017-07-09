@@ -22,8 +22,6 @@ namespace knesset_app
                 var res = new GeneralStatisticsResult();
                 using (var context = new KnessetContext())
                 {
-                    context.Database.Log = Console.WriteLine;
-                    
                     int numWordsSpoken = context.ParagraphWords.Count();
                     int numParagraphs = context.Paragraphs.Count();
                     res.NumProtocols = context.Protocols.Count();

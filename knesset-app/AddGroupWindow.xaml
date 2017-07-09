@@ -1,0 +1,34 @@
+﻿<Window x:Class="knesset_app.AddGroupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:knesset_app"
+        xmlns:db="clr-namespace:knesset_app.DBEntities"
+        mc:Ignorable="d"
+        Title="AddGroupWindow" Style="{StaticResource KnessetWindow}">
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Label>שם לקבוצה:</Label>
+        <TextBox TabIndex="0" Grid.Column="1" Name="groupNameTxt"/>
+
+        <TextBlock TextWrapping="Wrap" Grid.ColumnSpan="2" Grid.Row="1">
+            <Run>אנא הכנס רשימה של עד </Run>
+            <Run Text="{Binding Path=db:WordsGroup.MaxItemsInGroup, StringFormat={}{0:N0}}"/>
+            <Run> מילים בעברית, מופרדות ברווח או פסיק</Run>
+        </TextBlock>
+        <TextBox TabIndex="1" Grid.Row="2" Grid.ColumnSpan="2" Name="wordsListTxt" />
+
+        <Button HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Bottom" Width="200" Grid.ColumnSpan="2" TabIndex="2" Click="SaveGroup">יצירת קבוצה</Button>
+    </Grid>
+</Window>

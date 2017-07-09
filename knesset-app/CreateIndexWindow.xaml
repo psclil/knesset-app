@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:knesset_app"
         mc:Ignorable="d"
-        Title="יצירת אינדקס" Style="{StaticResource KnessetWindow}">
+        Title="יצירת אינדקס" Style="{StaticResource KnessetWindow}" Loaded="InitData" WindowState="Maximized">
+    <Window.DataContext>
+        <local:CreateIndexData/>
+    </Window.DataContext>
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -17,16 +20,16 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Column="0">פרוטוקול:</Label>
-        <ListBox Grid.Row="1" Grid.Column="0">[פרוטוקולים]</ListBox>
+        <Label Grid.Column="0">פרוטוקולים:</Label>
+        <ListBox Grid.Row="1" Grid.Column="0" SelectionMode="Extended" ItemsSource="{Binding AllProtocols}" Name="ProtocolsBox" ItemTemplate="{StaticResource ProtocolDisplay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
         <StackPanel Orientation="Horizontal" Grid.Column="1">
-            <Label Grid.Column="1">קבוצת מילים:</Label>
-            <Button Style="{StaticResource ComboActionBtn}">קבוצה חדשה</Button>
-            <Button Style="{StaticResource ComboDeleteBtn}">מחיקה</Button>
+            <Label Grid.Column="1">קבוצות מילים:</Label>
+            <Button Style="{StaticResource ComboActionBtn}" Click="AddGroup">קבוצה חדשה</Button>
+            <Button Style="{StaticResource ComboDeleteBtn}" Click="DeleteGroup">מחיקה</Button>
         </StackPanel>
-        <ListBox Grid.Row="1" Grid.Column="1">[קבוצות]</ListBox>
+        <ListBox Grid.Row="1" Grid.Column="1" SelectionMode="Extended" ItemsSource="{Binding AllGroups}" Name="GroupsBox" ItemTemplate="{StaticResource GroupDisplay}" />
 
-        <Button Grid.Row="2" Margin="0 8 0 0">יצירת אינדקס</Button>
+        <Button Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="250" Click="CreateIndex">יצירת אינדקס</Button>
     </Grid>
 </Window>

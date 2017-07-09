@@ -33,5 +33,22 @@
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="GroupDisplay" DataType="db:WordsGroup">
+            <StackPanel Margin="0 8">
+                <TextBlock FontSize="18" Text="{Binding g_name}"/>
+                <ItemsControl FontSize="16" ItemsSource="{Binding Path=items}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="db:WordInGroup">
+                            <TextBlock Text="{Binding Path=word}" Margin="0 0 10 0"></TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </DataTemplate>
     </Application.Resources>
 </Application>

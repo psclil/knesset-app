@@ -65,6 +65,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddGroupWindow.xaml.cs">
+      <DependentUpon>AddGroupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CreateIndexData.cs" />
     <Compile Include="CreateIndexWindow.xaml.cs">
       <DependentUpon>CreateIndexWindow.xaml</DependentUpon>
     </Compile>
@@ -84,6 +88,10 @@
       <DependentUpon>WordFrequenciesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WordFrequency.cs" />
+    <Page Include="AddGroupWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AddProtocolWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
