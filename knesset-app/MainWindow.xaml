@@ -21,7 +21,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Button Content="חיפוש" Grid.Column="1" Margin="10" Grid.Row="1"/>
+        <Button Content="חיפוש" Grid.Column="1" Margin="10" Grid.Row="1" Click="Search" />
         <Button Content="יצירת אינדקס" Grid.Column="2" Margin="10" Grid.Row="1" Click="CreateIndex"/>
         <Button Content="טעינת פרוטוקול" Grid.Column="3" Margin="10" Grid.Row="1" Click="AddProtocol"/>
         <Button Content="סטטיסטיקות" Grid.Column="4" Margin="10" Grid.Row="1" Click="ShowStatistics"/>

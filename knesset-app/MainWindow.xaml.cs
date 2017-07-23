@@ -45,6 +45,15 @@ namespace knesset_app
             statsWin.ShowDialog();
         }
 
+
+        private void Search(object sender, RoutedEventArgs e)
+        {
+            SearchWindow Win = new SearchWindow();
+            Win.ShowDialog();
+        }
+
+
+
         private void CreateIndex(object sender, RoutedEventArgs e)
         {
             CreateIndexWindow createWin = new CreateIndexWindow();

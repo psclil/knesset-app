@@ -1,0 +1,113 @@
+﻿<Window x:Class="knesset_app.SearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:control="clr-namespace:MultiSelectComboBox;assembly=MultiSelectComboBox"
+        xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=WPFToolkit"
+         xmlns:input="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+        
+        xmlns:local="clr-namespace:knesset_app"
+        mc:Ignorable="d"
+        Title="SearchWindow" Height="724.046" Width="497.908">
+
+    <TabControl HorizontalAlignment="Center"  Margin="62,10,50,156" Width="378"  FlowDirection="LeftToRight"   SelectionChanged="TabControl_SelectionChanged" >
+        <TabItem  Header="TabItem" Height="23"  >
+            <Grid Background="#FFE5E5E5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition  />
+                    <ColumnDefinition  />
+                    <ColumnDefinition />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </TabItem>
+        <TabItem   Name="tiSearchCommitties" Header="חפש וועדות" Height="23" VerticalAlignment="Bottom" IsSelected="True">
+            <Grid HorizontalAlignment="Center" Height="442"  VerticalAlignment="Center" FlowDirection="RightToLeft"  Width="312" Margin="19,48,37,3" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid  Grid.Column="1" Grid.Row="0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DatePicker x:Name="dpFromDate" Grid.Row="0" Grid.Column="0"     HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,8,50,9" Width="98" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">עד</TextBlock>
+                    <DatePicker  x:Name="dpToDate" Grid.Row="0" Grid.Column="1"     HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="49,8,1,9" Width="99" />
+
+                </Grid>
+
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">החל מ</TextBlock>
+                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">כותרת</TextBlock>
+                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">וועדה</TextBlock>
+                <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">מוזמנים</TextBlock>
+                <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" >נוכחים</TextBlock>
+
+
+                <!--<input:AutoCompleteBox 
+                            x:Name ="cbProtocolTitle"                             
+                            Width="230" 
+                            Grid.Row="1" Grid.Column="1" 
+                            Margin="0, 8, 0, 8"
+                            HorizontalAlignment="Left"                    
+                        SelectionChanged="OnSelectionChanged"
+                        />-->
+
+
+                <ComboBox x:Name ="cbProtocolTitle" Grid.Row="1" Grid.Column="1" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False"    />
+                <ComboBox  x:Name ="cbProtocolCommitte"  Grid.Row="2" Grid.Column="1"  IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False"  />
+
+                <control:MultiSelectComboBox x:Name ="cbInvited"   Grid.Row="3" Grid.Column="1"/>
+                <!--<ComboBox  x:Name ="cbInvited" Grid.Row="3" Grid.Column="1" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False" />-->
+                <!--<ComboBox  x:Name ="cbPersence" Grid.Row="4" Grid.Column="1" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False" />-->
+
+                <control:MultiSelectComboBox x:Name ="cbPersence"   Grid.Row="4" Grid.Column="1"/>
+                <Button x:Name ="btnSearch"   Grid.Row="5" Grid.Column="1" Click="btnSearch_Click" Margin="63,10,80,-8" Height="19" VerticalAlignment="Top">חפש</Button>
+
+
+                <ListBox Name="lstResults"  Grid.Row="6" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Margin="0,0,0,-80" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding pr_title}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+
+
+            </Grid>
+        </TabItem>
+        <TabItem Header="TabItem">
+            <Grid    Margin="-45,9,10,-9">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="33*"/>
+                    <ColumnDefinition Width="304*"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </TabItem>
+    </TabControl>
+
+
+</Window>
