@@ -13,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Data.Entity;
+
+
+
 namespace knesset_app
 {
 
