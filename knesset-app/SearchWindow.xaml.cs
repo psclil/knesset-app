@@ -60,8 +60,6 @@ namespace knesset_app
 
         private void PopulateComboboxes()
         {
-
-
             cbProtocolTitle.ItemsSource = context.Protocols.Take(10).ToList();
             cbProtocolTitle.DisplayMemberPath = "pr_title";
             cbProtocolTitle.SelectedValuePath = "pr_number";
@@ -256,5 +254,12 @@ namespace knesset_app
             }
 
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        
     }
 }
