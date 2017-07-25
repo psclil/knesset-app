@@ -60,17 +60,17 @@ namespace knesset_app
 
         private void PopulateComboboxes()
         {
-            cbProtocolTitle.ItemsSource = context.Protocols.Take(10).ToList();
+            cbProtocolTitle.ItemsSource = context.Protocols.Take(1000).ToList();
             cbProtocolTitle.DisplayMemberPath = "pr_title";
             cbProtocolTitle.SelectedValuePath = "pr_number";
 
-            cbProtocolCommitte.ItemsSource = context.Committees.Take(10).ToList();
+            cbProtocolCommitte.ItemsSource = context.Committees.Take(1000).ToList();
             cbProtocolCommitte.DisplayMemberPath = "c_name";
             cbProtocolCommitte.SelectedValuePath = "c_name";
 
             Dictionary<string, object> invitedPpl = new Dictionary<string, object>();
-            List<Invitation> lstInvitations = context.Invitations.Take(MAX_INVITATIONS).ToList();
-            foreach (Invitation invitation in lstInvitations)
+            List<Person> lstInvitations = context.Persons.Take(MAX_INVITATIONS).ToList();
+            foreach (Person invitation in lstInvitations)
             {
                 if (invitedPpl.ContainsKey(invitation.pn_name) == false)
                 {
@@ -81,8 +81,8 @@ namespace knesset_app
             cbInvited.ItemsSource = invitedPpl;
 
             Dictionary<string, object> presencedPpl = new Dictionary<string, object>();
-            List<Presence> lstPresences = context.Persence.Take(MAX_PRESENCE).ToList();
-            foreach (Presence presence in lstPresences)
+            List<Person> lstPersons = context.Persons.Take(MAX_PRESENCE).ToList();
+            foreach (Person presence in lstPersons)
             {
                 if (presencedPpl.ContainsKey(presence.pn_name) == false)
                 {
