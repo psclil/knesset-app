@@ -243,22 +243,129 @@ namespace knesset_app
                 }
                 else
                 {
+                  
                     List<Protocol> messages = new List<Protocol>();
                     Protocol message = new Protocol();
                     message.pr_title = "לא נמצאו תוצאות";
                     messages.Add(message);
-
-
                     lstResults.ItemsSource = messages;
+
                 }
             }
 
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+
+
+
+        private void btnSearch_Backwards(object sender, RoutedEventArgs e)
         {
 
+            List<ParagraphWord> searchedWords = new List<ParagraphWord>();
+       
+            string selectedProcotocolName = string.Empty;
+            int selectedParagraphNum;
+            int selectedWordNum;
+
+
+
+            if (protocolName.Text != null
+                && string.IsNullOrWhiteSpace(protocolName.Text) == false
+                && paragraphNum.Text != null
+                && wordNum.Text != null)
+            {
+                selectedProcotocolName = protocolName.Text;
+                selectedParagraphNum = int.Parse(paragraphNum.Text);
+                selectedWordNum = int.Parse(wordNum.Text);
+
+
+
+
+                if (
+                    selectedParagraphNum > 0
+                    && selectedWordNum > 0
+                    && string.IsNullOrWhiteSpace(selectedProcotocolName) == false
+                    )
+                {
+
+                    List<Protocol> relevantProtocols = new List<Protocol>();
+                    relevantProtocols = context.Protocols.Where(i => i.pr_title.Contains(selectedProcotocolName)).ToList();
+
+
+                    searchedWords = context.ParagraphWords.Where(p => ((p.pg_number == selectedParagraphNum
+                    &&
+                    p.word_number == selectedWordNum)
+                    )).ToList();
+
+
+                    searchedWords = (from p in searchedWords
+                                     join i in relevantProtocols
+                                     on p.pr_number equals i.pr_number
+                                     //where p.c_name == i.c_name
+                                     select new ParagraphWord
+                                     {
+                                         word = p.word,
+                                         c_name = i.pr_title
+                                     }
+                                 ).ToList();
+                }
+
+            }
+              if ( searchedWords.Count >0)
+              {
+              lstResultsBackwardSearch.ItemsSource = searchedWords;
+              }
+             else
+                {
+            List<ParagraphWord> messages = new List<ParagraphWord>();
+            ParagraphWord message = new ParagraphWord();
+            message.c_name = "לא נמצאו תוצאות";
+            message.word = "";
+                messages.Add(message);
+                    lstResultsBackwardSearch.ItemsSource = messages;
+            }
+
+            }
+
+
+
+
+        protected void SpecializedSoftware_CheckedChanged(object sender, EventArgs e)
+        {
+           
         }
+
+
+        private void wordNum_TextChanged(object sender, EventArgs e)
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(wordNum.Text, "  ^ [0-9]"))
+            {
+                wordNum.Text = "";
+            }
+        }
+
+
+        private void openChosenProtocol(object sender, SelectionChangedEventArgs e)
+        {
+            OpenProtocol chosenP = new OpenProtocol();
+            chosenP.ShowDialog();
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (checkSpeakerBox.IsChecked == false)
+            {
+                WordNumSearch.Visibility = Visibility.Hidden;
+                SpeakerSearch.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SpeakerSearch.Visibility = Visibility.Hidden;
+                WordNumSearch.Visibility = Visibility.Visible;
+            }
+            
+            }
+        
 
         
     }

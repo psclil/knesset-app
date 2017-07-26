@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace knesset_app.DBEntities
 {
@@ -33,5 +34,16 @@ namespace knesset_app.DBEntities
 
         [InverseProperty("paragraph")]
         public virtual ICollection<ParagraphWord> words { get; set; }
+
+        //just a draft.. i'll get to it tomorrow
+      //  public string ReconstractParagraph()
+        //{
+           // i
+          //  StringBuilder ret;
+           // foreach (l)
+           //     for (this.words  )
+         
+
+       // }
     }
 }

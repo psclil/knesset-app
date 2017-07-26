@@ -21,6 +21,17 @@
         <Style x:Key="ComboDeleteBtn" TargetType="Button" BasedOn="{StaticResource ComboActionBtn}">
             <Setter Property="Foreground" Value="Red"></Setter>
         </Style>
+        <!--<this is a template for the backwards serach>-->
+        <DataTemplate x:Key="WordDisplay" DataType="db:ParagraphWord">
+            <StackPanel Margin="0 8">
+                <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding word}" />
+                <TextBlock FontSize="16" TextWrapping="NoWrap">
+                     <Run> שם פרוטוקול  </Run>
+                    <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        
         <DataTemplate x:Key="ProtocolDisplay" DataType="db:Protocol">
             <StackPanel Margin="0 8">
                 <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding pr_title}" />
