@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Doc2Xml
 {
@@ -15,19 +16,36 @@ namespace Doc2Xml
     {
         static void Main(string[] args)
         {
+            WdSaveFormat toFormat = WdSaveFormat.wdFormatFlatXML;
+            string toExt = ".xml";
+
             List<string> fileNames = new List<string>(args);
+
+            if (fileNames.Contains("--pdf", StringComparer.InvariantCultureIgnoreCase))
+            {
+                toFormat = WdSaveFormat.wdFormatPDF;
+                toExt = ".pdf";
+            }
+            else if (fileNames.Contains("--rtf", StringComparer.InvariantCultureIgnoreCase))
+            {
+                toFormat = WdSaveFormat.wdFormatRTF;
+                toExt = ".rtf";
+            }
+            else if (fileNames.Contains("--txt", StringComparer.InvariantCultureIgnoreCase))
+            {
+                toFormat = WdSaveFormat.wdFormatUnicodeText;
+                toExt = ".txt";
+            }
+            // if files were passed convert them to full path (because the word app does not start in the current dir)
+            fileNames = (from f in fileNames
+                         where File.Exists(f)
+                         let fo = new FileInfo(f)
+                         select fo.FullName).ToList();
             if (fileNames.Count == 0)
             {
                 // if no files passed in args iterate all doc files in the current directory
                 DirectoryInfo d = new DirectoryInfo(Directory.GetCurrentDirectory());
-                fileNames = d.GetFiles("*.doc").Select(x => x.FullName).ToList();
-            }
-            else
-            {
-                // if files were passed convert them to full path (because the word app does not start in the current dir)
-                fileNames = (from f in fileNames
-                             let fo = new FileInfo(f)
-                             select fo.FullName).ToList();
+                fileNames = d.GetFiles("*.doc").Select(x => x.FullName).ToList(); // .doc also matched .docx
             }
             // create a new instance of the Word app.
             var app = new Application();
@@ -36,11 +54,11 @@ namespace Doc2Xml
                 try
                 {
                     Console.Error.Write(fname);
-                    string newFileName = fname.Replace(".doc", "") + ".xml";
+                    string newFileName = Regex.Replace(fname, "\\.[a-z0-9]+", "", RegexOptions.IgnoreCase) + toExt;
                     if (!File.Exists(newFileName))
                     {
                         Document d = app.Documents.Open(FileName: fname, ReadOnly: true);
-                        object fileFormat = WdSaveFormat.wdFormatFlatXML;
+                        object fileFormat = toFormat;
                         d.SaveAs2(FileName: newFileName, FileFormat: fileFormat);
                         d.Close(WdSaveOptions.wdDoNotSaveChanges);
                     }
