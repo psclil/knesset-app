@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace knesset_app
 {
     /// <summary>
-    /// Interaction logic for SearchComitte.xaml
+    /// Interaction logic for OpenProtocol.xaml
     /// </summary>
-    public partial class SearchComitte : Window
+    public partial class OpenProtocol : Window
     {
-        public SearchComitte()
+        public OpenProtocol()
         {
             InitializeComponent();
         }
