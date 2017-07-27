@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
 
 namespace knesset_app.DBEntities
@@ -35,15 +36,34 @@ namespace knesset_app.DBEntities
         [InverseProperty("paragraph")]
         public virtual ICollection<ParagraphWord> words { get; set; }
 
-        //just a draft.. i'll get to it tomorrow
-      //  public string ReconstractParagraph()
-        //{
-           // i
-          //  StringBuilder ret;
-           // foreach (l)
-           //     for (this.words  )
-         
+        private string _originalText;
+        public string OriginalText
+        {
+            get
+            {
+                if (_originalText == null) _originalText = ReconstractParagraph();
+                return _originalText;
+            }
+        }
 
-       // }
+        public string ReconstractParagraph()
+        {
+            int spaceFillerRead = 0;
+            StringBuilder ret = new StringBuilder();
+            foreach (ParagraphWord pWord in words.OrderBy(w=>w.pg_offset))
+            {
+                int spaceFillerNeeded = pWord.pg_offset - ret.Length;
+                if (spaceFillerNeeded > 0) {
+                    ret.Append(pg_space_fillers.Substring(spaceFillerRead, spaceFillerNeeded));
+                    spaceFillerRead += spaceFillerNeeded;
+                }
+                ret.Append(pWord.word);
+            }
+            if (spaceFillerRead < pg_space_fillers.Length)
+            {
+                ret.Append(pg_space_fillers.Substring(spaceFillerRead));
+            }
+            return ret.ToString();
+        }
     }
 }

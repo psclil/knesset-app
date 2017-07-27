@@ -31,7 +31,7 @@
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="ProtocolDisplay" DataType="db:Protocol">
             <StackPanel Margin="0 8">
                 <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding pr_title}" />
@@ -60,6 +60,12 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ParagraphDisplay" DataType="db:Paragraph">
+            <TextBlock TextWrapping="WrapWithOverflow" Margin="0 0 0 10">
+                <Run FontWeight="DemiBold" Text="{Binding pn_name,StringFormat='{}{0}: ', Mode=OneTime}"/>
+                <Run Text="{Binding OriginalText,Mode=OneTime}"/>
+            </TextBlock>
         </DataTemplate>
     </Application.Resources>
 </Application>
