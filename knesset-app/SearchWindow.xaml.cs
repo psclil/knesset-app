@@ -112,16 +112,6 @@ namespace knesset_app
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AutoCompleteBox acb = (AutoCompleteBox)sender;
-
-            // In these sample scenarios, the Tag is the name of the content 
-            // presenter to use to display the value.
-            string contentPresenterName = (string)acb.Tag;
-            ContentPresenter cp = FindName(contentPresenterName) as ContentPresenter;
-            if (cp != null)
-            {
-                cp.Content = acb.SelectedItem;
-            }
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
