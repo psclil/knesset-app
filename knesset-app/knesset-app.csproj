@@ -84,8 +84,8 @@
     <Compile Include="CreateIndexWindow.xaml.cs">
       <DependentUpon>CreateIndexWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OpenProtocol.xaml.cs">
-      <DependentUpon>OpenProtocol.xaml</DependentUpon>
+    <Compile Include="ProtocolDisplayWindow.xaml.cs">
+      <DependentUpon>ProtocolDisplayWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ParagraphReader.cs" />
     <Compile Include="PresenceStatisticsData.cs" />
@@ -148,7 +148,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="OpenProtocol.xaml">
+    <Page Include="ProtocolDisplayWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -337,8 +337,10 @@ namespace knesset_app
 
         private void openChosenProtocol(object sender, SelectionChangedEventArgs e)
         {
-            OpenProtocol chosenP = new OpenProtocol();
+            if (lstResults.SelectedIndex == -1) return;
+            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(lstResults.SelectedItem as Protocol);
             chosenP.ShowDialog();
+            lstResults.SelectedIndex = -1;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
