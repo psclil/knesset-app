@@ -3,14 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"  
-        xmlns:input="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
-        xmlns:control="clr-namespace:MultiSelectComboBox;assembly=MultiSelectComboBox"
      
         xmlns:local="clr-namespace:knesset_app"
         mc:Ignorable="d"
         Title="SearchWindow" Height="697.684" Width="900">
 
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+    
+    
     <TabControl HorizontalAlignment="Left"  Margin="0,0,0,-1" Width="892"  FlowDirection="LeftToRight"   SelectionChanged="TabControl_SelectionChanged" >
         <TabItem  Name="tiBackwardSearch" Header="חיפוש הפוך" IsSelected="True" Margin="-2,-2,-153,-12" FontSize="16"  >
             <Grid HorizontalAlignment="Center" Height="610"  VerticalAlignment="Top" FlowDirection="RightToLeft"  Width="879" Margin="-1,15,8,0" >
@@ -36,7 +38,7 @@
                 <TextBox Name="protocolName" Grid.Column="2" HorizontalAlignment="Left" Height="34" Margin="24,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="558" Grid.ColumnSpan="2"/>
 
                 <CheckBox Name="checkSpeakerBox" Content="חיפוש לפי דובר" Checked="CheckBox_Checked" IsChecked="False" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="19,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="130" />
-           
+
                 <Viewbox Name="WordNumSearch" Grid.ColumnSpan="2" Grid.Column="1" Margin="26,10,161,8" Grid.Row="3" Grid.RowSpan="2" 
                          Stretch="Fill" Visibility="{Binding IsVisible, ElementName=checkSpeakerBox }">
                     <Grid Height="84" Width="355">
@@ -47,12 +49,12 @@
                         <TextBox x:Name="wordNum" HorizontalAlignment="Left" Height="33" Margin="147,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
                     </Grid>
                 </Viewbox>
-                <Viewbox Name="SpeakerSearch" Margin="26,7,87,-58" Stretch="Fill" Visibility="{Binding  ElementName=checkSpeakerBox }" Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Grid.Row="3">
+                <Viewbox Name="SpeakerSearch" Margin="26,7,87,-58" Stretch="Fill" Visibility="{Binding IsChecked, ElementName=checkSpeakerBox,Converter={StaticResource BoolToVis } ,ConverterParameter=true }" Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Grid.Row="3">
                     <Grid Height="133" Width="417">
                         <TextBlock Text="שם הדובר" Margin="0,6,313,0" TextWrapping="Wrap" Height="21" FontSize="16" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBlock Text="מספר פסקה של הדובר" Margin="0,57,248,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBox x:Name="SpkeakerName" HorizontalAlignment="Left" Height="33" Margin="209,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
-                        <TextBox x:Name="PgOffsetSpeaker" HorizontalAlignment="Left" Height="33" Margin="209,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
+                        <TextBox x:Name="PgSpeakerNum" HorizontalAlignment="Left" Height="33" Margin="209,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
                         <TextBlock Text="היסט בפסקה" Margin="0,106,313,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBox x:Name="PgOffset" HorizontalAlignment="Left" Height="33" Margin="209,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
 
@@ -102,7 +104,6 @@
                     <DatePicker x:Name="dpFromDate" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="6.339,13.471,4.339,4.47" Width="185" Height="35" VerticalContentAlignment="Center" />
                     <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="2.333,0.521" Margin="16.154,18.33,162.154,13.33">עד</TextBlock>
                     <DatePicker  x:Name="dpToDate" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="50.5,13.471,155.857,4.47" Width="185" Height="35" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
-
                 </Grid>
 
                 <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1">החל מ</TextBlock>
@@ -112,26 +113,15 @@
                 <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,41.482,10" Width="66" Grid.Column="1" >נוכחים</TextBlock>
 
 
-                <!--<input:AutoCompleteBox 
-                            x:Name ="cbProtocolTitle"                             
-                            Width="230" 
-                            Grid.Row="1" Grid.Column="1" 
-                            Margin="0, 8, 0, 8"
-                            HorizontalAlignment="Left"                    
-                        SelectionChanged="OnSelectionChanged"
-                        />-->
 
 
-                <ComboBox x:Name ="cbProtocolTitle" Grid.Row="1"  Grid.Column="2" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False" Margin="5,5,140,5"    />
+                <TextBox x:Name ="cbProtocolTitle" Grid.Row="1"  Grid.Column="2" Margin="5,5,140,5"    />
                 <ComboBox  x:Name ="cbProtocolCommitte"  Grid.Row="2" Grid.Column="2"  IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False"  Margin="5,5,140,5"  />
-
-                <control:MultiSelectComboBox x:Name ="cbInvited"   Grid.Row="3" Grid.Column="2" BorderBrush="#FFACACAC"  Margin="5,5,140,5"  Height="40" />
-                <!--<ComboBox  x:Name ="cbInvited" Grid.Row="3" Grid.Column="1" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False" />-->
-                <!--<ComboBox  x:Name ="cbPersence" Grid.Row="4" Grid.Column="1" IsDropDownOpen="False" IsEditable="True" IsSynchronizedWithCurrentItem="False" />-->
-                <control:MultiSelectComboBox x:Name ="cbPersence"   Grid.Row="4" Grid.Column="2" BorderBrush="#FFACACAC" Margin="5,5,140,5" Height="40" />
+                <TextBox x:Name ="cbInvited" Grid.Row="3" Grid.Column="2" Margin="5,5,140,5"  Height="40" />
+                <TextBox x:Name ="cbPersence"   Grid.Row="4" Grid.Column="2" Margin="5,5,140,5" Height="40" />
 
                 <Button x:Name ="btnSearch"   Grid.Row="5" Grid.Column="2" Click="btnSearch_Click" Margin="221,10,350,0" Height="40" VerticalAlignment="Top">חפש</Button>
-
+                <Button x:Name ="btnClearFields"   Grid.Row="5" Grid.Column="2" Click="btnClearFields_Click" Margin="605,16,16,0" Height="29" VerticalAlignment="Top">נקה</Button>
 
                 <ListBox Name="lstResults"  Grid.Row="6" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Margin="21,19,28,-220" Grid.Column="1" ItemTemplate="{StaticResource ProtocolDisplay}" SelectionChanged="openChosenProtocol"/>
 

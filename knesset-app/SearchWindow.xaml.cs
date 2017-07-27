@@ -13,8 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Data.Entity;
-
-
+using System.Globalization;
 
 namespace knesset_app
 {
@@ -45,9 +44,7 @@ namespace knesset_app
     /// </summary>
     public partial class SearchWindow : Window
     {
-        int MAX_INVITATIONS = 1000;
-
-        int MAX_PRESENCE = 1000;
+        int MAX_COMMITTIE = 1000;
 
         KnessetContext context = new KnessetContext();
 
@@ -60,37 +57,11 @@ namespace knesset_app
 
         private void PopulateComboboxes()
         {
-            cbProtocolTitle.ItemsSource = context.Protocols.Take(1000).ToList();
-            cbProtocolTitle.DisplayMemberPath = "pr_title";
-            cbProtocolTitle.SelectedValuePath = "pr_number";
 
-            cbProtocolCommitte.ItemsSource = context.Committees.Take(1000).ToList();
+            cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_COMMITTIE).ToList();
             cbProtocolCommitte.DisplayMemberPath = "c_name";
             cbProtocolCommitte.SelectedValuePath = "c_name";
 
-            Dictionary<string, object> invitedPpl = new Dictionary<string, object>();
-            List<Person> lstInvitations = context.Persons.Take(MAX_INVITATIONS).ToList();
-            foreach (Person invitation in lstInvitations)
-            {
-                if (invitedPpl.ContainsKey(invitation.pn_name) == false)
-                {
-                    object val = invitation.pn_name;
-                    invitedPpl.Add(invitation.pn_name, val);
-                }
-            }
-            cbInvited.ItemsSource = invitedPpl;
-
-            Dictionary<string, object> presencedPpl = new Dictionary<string, object>();
-            List<Person> lstPersons = context.Persons.Take(MAX_PRESENCE).ToList();
-            foreach (Person presence in lstPersons)
-            {
-                if (presencedPpl.ContainsKey(presence.pn_name) == false)
-                {
-                    object val = presence.pn_name;
-                    presencedPpl.Add(presence.pn_name, val);
-                }
-            }
-            cbPersence.ItemsSource = presencedPpl;
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -108,140 +79,223 @@ namespace knesset_app
             }
         }
 
-
-
-        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnClearFields_Click(object sender, RoutedEventArgs e)
         {
+            cbProtocolTitle.Text = string.Empty;
+
+            cbProtocolCommitte.Text = string.Empty;
+            cbProtocolCommitte.SelectedIndex = -1;
+
+            dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
+
+            PopulateComboboxes();
+
+            cbInvited.Text = null;
+            cbPersence.Text = null;
         }
+
+    
+
+
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
 
-
+            string protocolTitle = string.Empty;
+            string selectedProcotocolCommitte = string.Empty;
             List<Protocol> protocols = new List<Protocol>();
-            //getting the date fields 
-            DateTime? fromDate = dpFromDate.SelectedDate;
-            DateTime? toDate = dpToDate.SelectedDate;
-            //protocol title field  - getting the number of the selected protocol by title   
-            int selectedProtocolNumber = 0;
-            if (cbProtocolTitle.SelectedValue != null)
+
+
+            if (cbProtocolTitle.Text != null && string.IsNullOrWhiteSpace(cbProtocolTitle.Text) == false)
             {
-                if (cbProtocolTitle.SelectedValue is int)
-                {
-                    selectedProtocolNumber = (int)cbProtocolTitle.SelectedValue;
-                }
+                protocolTitle = cbProtocolTitle.Text;
             }
 
             //commettie field 
-            string selectedProcotocolCommitte = string.Empty;
             if (cbProtocolCommitte.SelectedValue != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.SelectedValue.ToString()) == false)
             {
                 selectedProcotocolCommitte = cbProtocolCommitte.SelectedValue.ToString();
             }
 
-            List<string> lstInvitedNames = new List<string>();
-            if (cbInvited.SelectedItems != null && cbInvited.SelectedItems.Count > 0)
+
+
+            //getting the date fields 
+            DateTime? fromDate = dpFromDate.SelectedDate;
+            DateTime? toDate = dpToDate.SelectedDate;
+
+
+
+            int PersonIsExist = 1;
+
+            List<Invitation> lstinvt = new List<Invitation>();
+            List<Invitation> lstinvted = new List<Invitation>();
+            if (string.IsNullOrWhiteSpace(cbInvited.Text) == false)
             {
-                foreach (KeyValuePair<string, object> pair in cbInvited.SelectedItems)
+                string[] split = cbInvited.Text.Split(',');
+                for (int i = 0; i < split.Length; i++)
                 {
-                    if (lstInvitedNames.Contains(pair.Key) == false)
+                    split[i] = split[i].Trim();
+                }
+                string temp = split[0];
+                lstinvted = context.Invitations.Where(p => p.pn_name.Equals(temp)).ToList();
+
+                for (int i = 1; i <= split.Length; i++)
+                {
+                    string s = split[i - 1];
+                    lstinvt = context.Invitations.Where(j => j.pn_name.Equals(s)).ToList();
+                    if (lstinvt.Count == 0)
                     {
-                        lstInvitedNames.Add(pair.Key);
+                        PersonIsExist = 0;
+                        break;
+                    }
+                    else
+                    {
+                        lstinvted = (from p in lstinvted
+                                     join j in lstinvt
+                                       on p.pr_number equals j.pr_number
+                                     select new Invitation
+                                     {
+                                         pr_number = p.pr_number,
+                                         pn_name = p.pn_name
+                                     }
+                                ).ToList();
+                        if (lstinvted.Count == 0)
+                        {
+                            PersonIsExist = 0;
+                            break;
+                        }
+
+
                     }
                 }
             }
 
+            List<Presence> lstPrese = new List<Presence>();
+            List<Presence> lstPersence = new List<Presence>();
 
-
-
-
-            List<string> lstPresencedNames = new List<string>();
-            if (cbPersence.SelectedItems != null && cbPersence.SelectedItems.Count > 0)
+            if (PersonIsExist == 1)
             {
-                foreach (KeyValuePair<string, object> pair in cbPersence.SelectedItems)
+
+
+                if (string.IsNullOrWhiteSpace(cbPersence.Text) == false)
                 {
-                    if (lstPresencedNames.Contains(pair.Key) == false)
+                    string[] split = cbPersence.Text.Split(',');
+                    foreach (string s in split)
                     {
-                        lstPresencedNames.Add(pair.Key);
+                        s.Trim();
+                    }
+                    string temp = split[0];
+                    lstPersence = context.Persence.Where(p => p.pn_name == temp).ToList();
+                    for (int i = 1; i <= split.Length; i++)
+                    {
+                        string s = split[i - 1];
+                        lstPrese = context.Persence.Where(j => j.pn_name == s).ToList();
+                        if (lstPrese.Count == 0)
+                        {
+                            PersonIsExist = 0;
+                            break;
+                        }
+                        else
+                        {
+                            lstPersence = (from p in lstPersence
+                                           join j in lstPrese
+                                          on p.pr_number equals j.pr_number
+                                           select new Presence
+                                           {
+                                               pr_number = p.pr_number,
+                                               pn_name = p.pn_name
+                                           }
+                                    ).ToList();
+                            if (lstPersence.Count == 0)
+                            {
+                                PersonIsExist = 0;
+                                break;
+                            }
+
+
+                        }
                     }
                 }
+
             }
 
 
-            if (
-                dpFromDate != null || toDate != null
-                || selectedProtocolNumber > 0
+
+            if (PersonIsExist == 1)
+            {
+                if (
+                dpFromDate != null
+                || toDate != null
                 || string.IsNullOrWhiteSpace(selectedProcotocolCommitte) == false
-                || lstInvitedNames.Count > 0
-                || lstPresencedNames.Count > 0
+                || string.IsNullOrWhiteSpace(protocolTitle) == false
+                || lstinvted.Count > 0
+                || lstPersence.Count > 0
+                || lstPersence.Count > 0
                 )
-            {
-                protocols = context.Protocols.Where(p => (selectedProtocolNumber == 0 || p.pr_number == selectedProtocolNumber)
-               &&
-               (string.IsNullOrEmpty(selectedProcotocolCommitte) || p.c_name.Contains(selectedProcotocolCommitte))
-               &&
-               (fromDate == null || p.pr_date >= fromDate)
-               &&
-               (toDate == null || p.pr_date <= toDate)
-
-               ).ToList();
-
-
-                // intersecting with invitations :           
-                List<Invitation> relevantInvitations = context.Invitations.Where(i => lstInvitedNames.Contains(i.pn_name)).ToList();
-
-                if (relevantInvitations.Count > 0)
                 {
-
-                    protocols = (from p in protocols
-                                 join i in relevantInvitations
-                                 on p.pr_number equals i.pr_number
-                                 where p.c_name == i.c_name
-                                 select new Protocol
-                                 {
-                                     pr_number = p.pr_number,
-                                     pr_title = p.pr_title,
-                                     pr_date = p.pr_date
-                                 }
-                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
-                }
+                    protocols = context.Protocols.Where(p =>
+                   (string.IsNullOrEmpty(selectedProcotocolCommitte) || p.c_name.Contains(selectedProcotocolCommitte))
+                   &&
+                   (string.IsNullOrEmpty(protocolTitle) || p.pr_title.Contains(protocolTitle))
+                   &&
+                   (fromDate == null || p.pr_date >= fromDate)
+                   &&
+                   (toDate == null || p.pr_date <= toDate)
+                   ).ToList();
 
 
-                // intersecting with presence :           
-                List<Presence> relevantPrecenses = context.Persence.Where(i => lstPresencedNames.Contains(i.pn_name)).ToList();
+                    // intersecting with invitations :           
+                    if (lstinvted.Count > 0)
+                    {
 
-                if (relevantPrecenses.Count > 0)
-                {
-
-                    protocols = (from p in protocols
-                                 join rp in relevantPrecenses
-                                 on p.pr_number equals rp.pr_number
-                                 where p.c_name == rp.c_name
-                                 select new Protocol
-                                 {
-                                     pr_number = p.pr_number,
-                                     pr_title = p.pr_title,
-                                     pr_date = p.pr_date
-                                 }
-                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
-                }
+                        protocols = (from p in protocols
+                                     join i in lstinvted
+                                     on p.pr_number equals i.pr_number
+                                     //   where p.c_name == i.c_name
+                                     select new Protocol
+                                     {
+                                         pr_number = p.pr_number,
+                                         pr_title = p.pr_title,
+                                         pr_date = p.pr_date
+                                     }
+                                     ).ToList().Distinct(new ProtocolsComparer()).ToList();
+                    }
 
 
-                if (protocols != null && protocols.Count > 0)
-                {
-                    lstResults.ItemsSource = protocols;
-                }
-                else
-                {
-                  
-                    List<Protocol> messages = new List<Protocol>();
-                    Protocol message = new Protocol();
-                    message.pr_title = "לא נמצאו תוצאות";
-                    messages.Add(message);
-                    lstResults.ItemsSource = messages;
+                    // intersecting with presence :           
+                    if (lstPersence.Count > 0)
+                    {
+
+                        protocols = (from p in protocols
+                                     join rp in lstPersence
+                                     on p.pr_number equals rp.pr_number
+                                     //   where p.c_name == rp.c_name
+                                     select new Protocol
+                                     {
+                                         pr_number = p.pr_number,
+                                         pr_title = p.pr_title,
+                                         pr_date = p.pr_date
+                                     }
+                                     ).ToList().Distinct(new ProtocolsComparer()).ToList();
+                    }
 
                 }
             }
+            if (protocols != null && protocols.Count > 0)
+            {
+                lstResults.ItemsSource = protocols;
+            }
+            else
+            {
+
+                List<Protocol> messages = new List<Protocol>();
+                Protocol message = new Protocol();
+                message.pr_title = "לא נמצאו תוצאות";
+                messages.Add(message);
+                lstResults.ItemsSource = messages;
+
+            }
+
 
         }
 
@@ -251,78 +305,165 @@ namespace knesset_app
         private void btnSearch_Backwards(object sender, RoutedEventArgs e)
         {
 
+            Boolean IsSpeakerTRUE = false;
             List<ParagraphWord> searchedWords = new List<ParagraphWord>();
-       
             string selectedProcotocolName = string.Empty;
-            int selectedParagraphNum;
-            int selectedWordNum;
+
+            if (!IsSpeakerTRUE)
+            {
+                int selectedParagraphNum;
+                int selectedWordNum;
 
 
-
-            if (protocolName.Text != null
+                if (protocolName.Text != null
                 && string.IsNullOrWhiteSpace(protocolName.Text) == false
                 && paragraphNum.Text != null
                 && wordNum.Text != null)
-            {
-                selectedProcotocolName = protocolName.Text;
-                selectedParagraphNum = int.Parse(paragraphNum.Text);
-                selectedWordNum = int.Parse(wordNum.Text);
-
-
-
-
-                if (
-                    selectedParagraphNum > 0
-                    && selectedWordNum > 0
-                    && string.IsNullOrWhiteSpace(selectedProcotocolName) == false
-                    )
                 {
+                    selectedProcotocolName = protocolName.Text;
+                    selectedParagraphNum = int.Parse(paragraphNum.Text);
+                    selectedWordNum = int.Parse(wordNum.Text);
+
+
+                    if (
+                        selectedParagraphNum > 0
+                        && selectedWordNum > 0
+                        && string.IsNullOrWhiteSpace(selectedProcotocolName) == false
+                        )
+                    {
+
+                        List<Protocol> relevantProtocols = new List<Protocol>();
+                        relevantProtocols = context.Protocols.Where(i => i.pr_title.Contains(selectedProcotocolName)).ToList();
+
+
+                        searchedWords = context.ParagraphWords.Where(p => ((p.pg_number == selectedParagraphNum
+                        &&
+                        p.word_number == selectedWordNum)
+                        )).ToList();
+
+
+                        searchedWords = (from p in searchedWords
+                                         join i in relevantProtocols
+                                         on p.pr_number equals i.pr_number
+                                         //where p.c_name == i.c_name
+                                         select new ParagraphWord
+                                         {
+                                             word = p.word,
+                                             c_name = i.pr_title
+                                         }
+                                     ).ToList();
+                    }
+
+                }
+            }
+            ////*******************************************//
+            else
+            {
+
+                string speakerName = string.Empty;
+                int paragraphSpekerNum;
+                int paragraphSpekerOffset;
+
+
+                if (protocolName.Text != null
+                    && string.IsNullOrWhiteSpace(protocolName.Text) == false
+                    && string.IsNullOrWhiteSpace(SpkeakerName.Text) == false
+                    && PgSpeakerNum.Text != null
+                    && PgOffset.Text != null)
+                {
+                    selectedProcotocolName = protocolName.Text;
+                    speakerName = SpkeakerName.Text;
+                    paragraphSpekerNum = int.Parse(PgSpeakerNum.Text);
+                    paragraphSpekerOffset = int.Parse(PgOffset.Text);
+
+
+
 
                     List<Protocol> relevantProtocols = new List<Protocol>();
                     relevantProtocols = context.Protocols.Where(i => i.pr_title.Contains(selectedProcotocolName)).ToList();
 
-
-                    searchedWords = context.ParagraphWords.Where(p => ((p.pg_number == selectedParagraphNum
+                    List<DBEntities.Paragraph> speakerResults = new List<DBEntities.Paragraph>();
+                    speakerResults = context.Paragraphs.Where(p => ((p.pn_pg_number == paragraphSpekerNum
                     &&
-                    p.word_number == selectedWordNum)
+                    p.pn_name == speakerName)
                     )).ToList();
 
-
-                    searchedWords = (from p in searchedWords
-                                     join i in relevantProtocols
+                    speakerResults = (from p in speakerResults
+                                      join i in relevantProtocols
                                      on p.pr_number equals i.pr_number
-                                     //where p.c_name == i.c_name
+                                      select new DBEntities.Paragraph
+                                      {
+                                          pn_pg_number = p.pn_pg_number,
+                                          c_name = i.pr_title,
+                                          pn_name = p.pn_name,
+                                          pr_number = p.pr_number
+                                      }
+                                 ).ToList();
+
+
+                    List<ParagraphWord> speakerWords = new List<ParagraphWord>();
+                    speakerWords = context.ParagraphWords.Where(j => j.pg_offset == paragraphSpekerOffset).ToList();
+
+                    searchedWords = (from j in speakerWords
+                                     join i in relevantProtocols
+                                     on j.pr_number equals i.pr_number
+                                     //  where j.pg_offset == paragraphSpekerOffset
                                      select new ParagraphWord
                                      {
-                                         word = p.word,
-                                         c_name = i.pr_title
+                                         word = j.word,
+                                         c_name = i.pr_title,
+                                         pg_offset = j.pg_offset,
+                                         pr_number = j.pr_number
                                      }
-                                 ).ToList();
+                             ).ToList();
+
+
+                    // joint between temp results 
+                    searchedWords = (from p in speakerResults
+                                     join j in searchedWords
+                                     on p.pr_number equals j.pr_number
+                                     where p.pg_number == j.pg_number
+                                     select new ParagraphWord
+                                     {
+                                         word = j.word,
+                                         c_name = j.c_name,
+
+                                     }
+                               ).ToList();
+
+
                 }
-
             }
-              if ( searchedWords.Count >0)
-              {
-              lstResultsBackwardSearch.ItemsSource = searchedWords;
-              }
-             else
-                {
-            List<ParagraphWord> messages = new List<ParagraphWord>();
-            ParagraphWord message = new ParagraphWord();
-            message.c_name = "לא נמצאו תוצאות";
-            message.word = "";
+
+
+
+
+
+            if (searchedWords.Count > 0)
+            {
+                lstResultsBackwardSearch.ItemsSource = searchedWords;
+            }
+            else
+            {
+                List<ParagraphWord> messages = new List<ParagraphWord>();
+                ParagraphWord message = new ParagraphWord();
+                message.c_name = "לא נמצאו תוצאות";
+                message.word = "";
                 messages.Add(message);
-                    lstResultsBackwardSearch.ItemsSource = messages;
+                lstResultsBackwardSearch.ItemsSource = messages;
             }
 
-            }
+        }
 
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
 
 
 
         protected void SpecializedSoftware_CheckedChanged(object sender, EventArgs e)
         {
-           
+
         }
 
 
@@ -355,10 +496,27 @@ namespace knesset_app
                 SpeakerSearch.Visibility = Visibility.Hidden;
                 WordNumSearch.Visibility = Visibility.Visible;
             }
-            
-            }
-        
 
-        
+        }
+
+        [ValueConversion(typeof(bool), typeof(Visibility))]
+        public sealed class InverseBooleanToVisibilityConverter : IValueConverter
+        {
+            private BooleanToVisibilityConverter _converter = new BooleanToVisibilityConverter();
+
+            public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+            {
+                
+                var result = _converter.Convert(value, targetType, parameter, culture) as Visibility?;
+                return result == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+            {
+                var result = _converter.ConvertBack(value, targetType, parameter, culture) as bool?;
+                return result == true ? false : true;
+            }
+        }
+
     }
 }
