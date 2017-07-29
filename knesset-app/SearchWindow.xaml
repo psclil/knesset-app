@@ -46,8 +46,8 @@
 
                         <TextBlock Text="מספר פסקה" HorizontalAlignment="Left" Margin="0,6,0,0" TextWrapping="Wrap" Height="21" Width="104" FontSize="16" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBlock Text="מספר מילה" HorizontalAlignment="Left" Margin="0,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" Width="104" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
-                        <TextBox x:Name="paragraphNum" HorizontalAlignment="Left" Height="33" Margin="147,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
-                        <TextBox x:Name="wordNum" TextChanged="wordNum_TextChanged" HorizontalAlignment="Left" Height="33" Margin="147,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
+                        <TextBox x:Name="paragraphNum" TextChanged="numericTxt_Change" HorizontalAlignment="Left" Height="33" Margin="147,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
+                        <TextBox x:Name="wordNum" TextChanged="numericTxt_Change" HorizontalAlignment="Left" Height="33" Margin="147,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
                     </Grid>
                 </Viewbox>
                 <Viewbox x:Name="SpeakerSearch" Margin="26,7,87,-58" Visibility="Hidden" Stretch="Fill" Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Grid.Row="3">
@@ -55,9 +55,9 @@
                         <TextBlock Text="שם הדובר" Margin="0,6,313,0" TextWrapping="Wrap" Height="21" FontSize="16" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBlock Text="מספר פסקה של הדובר" Margin="0,57,248,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBox x:Name="SpkeakerName" HorizontalAlignment="Left" Height="33" Margin="209,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
-                        <TextBox x:Name="PgSpeakerNum" HorizontalAlignment="Left" Height="33" Margin="209,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
+                        <TextBox x:Name="PgSpeakerNum" TextChanged="numericTxt_Change" HorizontalAlignment="Left" Height="33" Margin="209,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
                         <TextBlock Text="היסט בפסקה" Margin="0,106,313,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
-                        <TextBox x:Name="PgOffset" HorizontalAlignment="Left" Height="33" Margin="209,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
+                        <TextBox x:Name="PgOffset" TextChanged="numericTxt_Change" HorizontalAlignment="Left" Height="33" Margin="209,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
 
 
                     </Grid>
@@ -143,15 +143,13 @@
 
 
                 </Grid.RowDefinitions>
-                
+
                 <ComboBox x:Name="dpListExpression" IsEditable="True"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="546" Height="40" IsTextSearchEnabled="True"/>
                 <TextBox Grid.Column="1" HorizontalAlignment="Left" AutoWordSelection="True" Height="23" Margin="18.983,17,0,0" Grid.Row="1" TextWrapping="Wrap" Text="ביטוי/מילה" VerticalAlignment="Top" Width="120" BorderBrush="{x:Null}"/>
                 <ListBox Name="lsResultsExpression"  ItemTemplate="{StaticResource ProtocolDisplay}"  Grid.Column="1" HorizontalAlignment="Left" Height="318" Margin="18.983,212,0,-480" Grid.Row="1" VerticalAlignment="Top" Width="838.017" Grid.ColumnSpan="2"/>
-                <Button x:Name ="btnExpressionSearch" Click="btnSerach_Expression" Grid.Column="2" HorizontalAlignment="Left" Margin="197,98,0,-82" Grid.Row="1" VerticalAlignment="Top" Width="152" Height="34" >
-                    <Button Content="חפש" Width="75" Background="{x:Null}" BorderBrush="{x:Null}" />
-                </Button>
+                <Button x:Name ="btnExpressionSearch" Click="btnSerach_Expression" Grid.Column="2" HorizontalAlignment="Left" Margin="197,98,0,-82" Grid.Row="1" VerticalAlignment="Top" Width="152" Height="34"/>
                 <TextBox x:Name="tbListExpression" AutoWordSelection="True" Grid.Column="2" HorizontalAlignment="Left" Height="33" Margin="10,60,0,-43" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="536" TextChanged="tbListExpression_TextChanged"/>
-  
+
 
             </Grid>
         </TabItem>

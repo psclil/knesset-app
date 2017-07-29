@@ -26,8 +26,11 @@
             <StackPanel Margin="0 8">
                 <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding word}" />
                 <TextBlock FontSize="16" TextWrapping="NoWrap">
-                     <Run> שם פרוטוקול  </Run>
                     <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
+                    <Run> פרוטוקול </Run>
+                    <Run Text="{Binding pr_number}" FontWeight="DemiBold"/>
+                    <Run>: </Run>
+                    <Run Text="{Binding paragraph.protocol.pr_title}"/>
                 </TextBlock>
             </StackPanel>
         </DataTemplate>

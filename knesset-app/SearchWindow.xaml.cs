@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using knesset_app.DBEntities;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Data.Entity;
-using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace knesset_app
 {
@@ -101,21 +93,14 @@ namespace knesset_app
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
+            IQueryable<Protocol> relevantProtocols = context.Protocols;
 
-            string protocolTitle = string.Empty;
+            string protocolTitle = string.IsNullOrEmpty(cbProtocolTitle.Text) ? string.Empty : cbProtocolTitle.Text;
             string selectedProcotocolCommitte = string.Empty;
 
             //getting the date fields 
             DateTime? fromDate = dpFromDate.SelectedDate;
             DateTime? toDate = dpToDate.SelectedDate;
-
-            List<Protocol> protocols = new List<Protocol>();
-
-
-            if (cbProtocolTitle.Text != null && string.IsNullOrWhiteSpace(cbProtocolTitle.Text) == false)
-            {
-                protocolTitle = cbProtocolTitle.Text;
-            }
 
             //commettie field 
             if (cbProtocolCommitte.SelectedValue != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.SelectedValue.ToString()) == false)
@@ -123,128 +108,62 @@ namespace knesset_app
                 selectedProcotocolCommitte = cbProtocolCommitte.SelectedValue.ToString();
             }
 
+            if (!string.IsNullOrEmpty(selectedProcotocolCommitte))
+                relevantProtocols = relevantProtocols.Where(x => x.c_name == selectedProcotocolCommitte);
+            if (!string.IsNullOrEmpty(protocolTitle))
+                relevantProtocols = relevantProtocols.Where(x => x.pr_title.Contains(protocolTitle));
+            if (fromDate.HasValue)
+                relevantProtocols = relevantProtocols.Where(x => x.pr_date >= fromDate);
+            if (toDate.HasValue)
+                relevantProtocols = relevantProtocols.Where(x => x.pr_date <= toDate);
 
-            int PersonIsExist = 1;
+            char[] nameListSplit = new char[] { ',' };
 
-
-            List<Protocol> invitedProtocolList = new List<Protocol>();
-            if (string.IsNullOrWhiteSpace(cbInvited.Text) == false)
+            if (!string.IsNullOrWhiteSpace(cbInvited.Text))
             {
-                string[] split = cbInvited.Text.Split(new char[','], StringSplitOptions.RemoveEmptyEntries);
+                string[] split = cbInvited.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
                 {
                     split[i] = split[i].Trim();
                 }
 
-                IQueryable<Protocol> invitedListQuery = context.Protocols;
                 foreach (string temps in split)
                 {
-                    invitedListQuery = invitedListQuery.Where(x => x.invitations.Any(i => i.pn_name == temps));
-                  //  x.c_name == i.c_name && x.pr_number == i.pr_number
+                    relevantProtocols = relevantProtocols.Where(x => x.invitations.Any(i => i.pn_name == temps));
                 }
-
-                List<Protocol> invitedProt22 =
-                                 (from p in context.Protocols
-                                 join i in invitedListQuery
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }                             
-                                 select p
-                             ).ToList();
-
-                foreach (var prot in invitedProt22)
-                {
-                    invitedProtocolList.AddRange(invitedListQuery.Where(x => x.c_name == prot.c_name && x.pr_number == prot.pr_number));
-                }
-
-
-
             }
 
-            // invitedProtocolListQuery = context.Protocols.Where(x => x.invitations.Any(i => split.Contains(i.pn_name)));
-            //invitedProtocolListQuery = invitedProtocolListQuery.Where(x => x.c_name == prot.c_name && x.pr_number == prot.pr_number);
-            /* IQueryable<Protocol> invitedListQuery = context.Protocols.Where(x => x.invitations.Any(i => split.Contains(i.pn_name)));
- 
-            */
-
-
-
-            List<Protocol> presenceProtocolList = new List<Protocol>();
             if (string.IsNullOrWhiteSpace(cbPersence.Text) == false)
             {
-                string[] split = cbPersence.Text.Split(new char[','], StringSplitOptions.RemoveEmptyEntries);
+                string[] split = cbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
                 {
                     split[i] = split[i].Trim();
                 }
 
+                foreach (string temps in split)
+                {
+                    relevantProtocols = relevantProtocols.Where(x => x.persence.Any(i => i.pn_name == temps));
+                }
             }
 
+            List<Protocol> protocols = relevantProtocols.ToList();
 
-
-
-
-            if (PersonIsExist == 1)
-            {
-
-                IQueryable<Protocol> relevantProtocols = context.Protocols;
-                if (!string.IsNullOrEmpty(selectedProcotocolCommitte))
-                    relevantProtocols = relevantProtocols.Where(x => x.c_name == selectedProcotocolCommitte);
-                if (!string.IsNullOrEmpty(protocolTitle))
-                    relevantProtocols = relevantProtocols.Where(x => x.pr_title == protocolTitle);
-                if (fromDate != null)
-                    relevantProtocols = relevantProtocols.Where(x => x.pr_date >= fromDate);
-                if (toDate != null)
-                    relevantProtocols = relevantProtocols.Where(x => x.pr_date <= toDate);
-
-
-                protocols = (from p in context.Protocols
-                             join i in relevantProtocols
-                            on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                             select p
-                          ).ToList().Distinct(new ProtocolsComparer()).ToList();
-
-
-                // intersecting with invitations :           
-                if (invitedProtocolList.Count > 0)
-                {
-                    protocols = (from p in protocols
-                                 join i in invitedProtocolList
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 select p
-                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
-
-
-                }
-
-
-                // intersecting with presence :           
-                if (presenceProtocolList.Count > 0)
-                {
-                    protocols = (from p in protocols
-                                 join i in presenceProtocolList
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 select p
-                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
-                }
-
-
-            }
             if (protocols != null && protocols.Count > 0)
             {
                 lstResults.ItemsSource = protocols;
             }
             else
             {
-
                 List<Protocol> messages = new List<Protocol>();
                 Protocol message = new Protocol();
                 message.pr_title = "לא נמצאו תוצאות";
                 messages.Add(message);
                 lstResults.ItemsSource = messages;
-
             }
-
-
         }
+
+
 
 
 
@@ -255,7 +174,7 @@ namespace knesset_app
             string selectedProcotocolName = string.Empty;
 
             if (!IsSpeakerTRUE)
-            { 
+            {
                 selectedProcotocolName = protocolName.Text;
                 int selectedParagraphNum = int.Parse(paragraphNum.Text);
                 int selectedWordNum = int.Parse(wordNum.Text);
@@ -272,7 +191,7 @@ namespace knesset_app
             }
 
             // serach by speaker
-            else if (IsSpeakerTRUE)
+            else
             {
 
                 string speakerName = string.Empty;
@@ -283,23 +202,21 @@ namespace knesset_app
 
 
 
-                IQueryable<Protocol> relevantProtocols = context.Protocols.Where(i => i.pr_title.Contains(selectedProcotocolName));
-                IQueryable<DBEntities.Paragraph> relevantParagraphs = context.Paragraphs.Where(i => i.pn_name.Contains(speakerName)
-                && i.pn_pg_number == paragraphSpekerNum);
+                IQueryable<Protocol> relevantProtocols = context.Protocols;
+                IQueryable<Paragraph> relevantParagraphs = context.Paragraphs;
 
                 searchedWords = (from p in context.ParagraphWords
                                  join i in relevantProtocols
                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 where p.pg_offset == paragraphSpekerOffset
+                                 join r in relevantParagraphs
+                                 on new { p.c_name, p.pr_number, p.pg_number } equals new { r.c_name, r.pr_number, r.pg_number }
+                                 where p.pg_offset == paragraphSpekerOffset 
+                                 && 
+                                 i.pr_title.Contains(selectedProcotocolName)
+                                 && r.pn_name.Contains(speakerName)
+                                 && r.pn_pg_number == paragraphSpekerNum
                                  select p
                              ).ToList();
-
-                searchedWords = (from p in searchedWords
-                                 join i in relevantParagraphs
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 select p
-                            ).ToList();
-
             }
 
 
@@ -322,6 +239,8 @@ namespace knesset_app
 
 
 
+
+
         private void fillComboboxes()
         {
 
@@ -333,103 +252,59 @@ namespace knesset_app
         }
 
 
-
-
         private void btnSerach_Expression(object sender, RoutedEventArgs e)
         {
-            string selectedExpression = string.Empty;
-
-            List<Protocol> ProtocolExpression = new List<Protocol>();
-
-
-            if (string.IsNullOrWhiteSpace(tbListExpression.Text) == false)
+            if (string.IsNullOrWhiteSpace(dpListExpression.Text))
             {
-                string[] split = selectedExpression.Split(new char[' '], StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < split.Length; i++)
-                {
-                    split[i] = split[i].Trim();
-                }
-
-                if (split.Length < 6)
-                {
-
-                    IQueryable<ParagraphWord> slecetedExpression = context.ParagraphWords;
-                    string temp;//= split[0];
-                    slecetedExpression = context.ParagraphWords.Where(x => (x.word == split[0]));
-
-                    for (int j = 1; j < split.Length; j++)
-                    {
-                        temp = split[j];
-                        slecetedExpression = slecetedExpression.Where(x => context.ParagraphWords.Any(i => (
-                        i.word == temp
-                        && 
-                        x.pr_number==i.pr_number 
-                        && 
-                        x.pg_number ==i.pg_number 
-                        &&
-                        x.word_number+1==i.word_number)));
-
-                    }
-                    IQueryable<Protocol>tempProtocolList = context.Protocols;
-
-
-                       for (int j = 1; j < split.Length; j++)
-                    {
-                        temp = split[j];
-                        slecetedExpression = slecetedExpression.Where(x => context.ParagraphWords.Any(i => (
-                        i.word == temp
-                        &&
-                        x.c_name == i.c_name
-                        &&
-                        x.pr_number==i.pr_number 
-                        && 
-                        x.pg_number ==i.pg_number 
-                        &&
-                        x.word_number+1==i.word_number)));
-
-                        tempProtocolList = tempProtocolList.Where(x => slecetedExpression.Any(i => 
-                        x.c_name == i.c_name
-                        &&
-                        x.pr_number == i.pr_number
-                        ));
-                    }
-
-                    List<Protocol> invitedProt22 =
-                             (from p in context.Protocols
-                              join i in tempProtocolList
-                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                              select p
-                         ).ToList();
-
-
-                    foreach (var prot in invitedProt22)
-                    {
-                        ProtocolExpression.AddRange(tempProtocolList.Where(x => x.c_name == prot.c_name && x.pr_number == prot.pr_number));
-
-                    }
-
-
-
-
-
-                    if (ProtocolExpression != null && ProtocolExpression.Count > 0)
-                    {
-                        // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
-                        lsResultsExpression.ItemsSource = ProtocolExpression;
-                    }
-                    else
-                    {
-
-                        List<Protocol> messages = new List<Protocol>();
-                        Protocol message = new Protocol();
-                        message.pr_title = "לא נמצאו תוצאות";
-                        messages.Add(message);
-                        lsResultsExpression.ItemsSource = messages;
-
-                    }
-                }
+                MessageBox.Show("חובה להכניס ביטוי לחיפוש");
+                return;
+            }
+            string selectedExpression = dpListExpression.Text;
+            string[] split = selectedExpression.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Trim();
             }
 
+            if (split.Length >= 6)
+            {
+                MessageBox.Show("יותר מידי מילים בביטוי לחיפוש");
+                return;
+            }
+            string firstWord = split[0];
+            IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
+
+            for (int j = 1; j < split.Length; j++)
+            {
+                string temp = split[j];
+                selecetedExpression = selecetedExpression.Where(x => context.ParagraphWords.Any(i => (
+                i.word == temp
+                &&
+                x.pr_number == i.pr_number
+                &&
+                x.pg_number == i.pg_number
+                &&
+                x.word_number + j == i.word_number)));
+
+            }
+
+            List<ParagraphWord> results = selecetedExpression.ToList();
+
+            if (results.Count > 0)
+            {
+                // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
+                //lsResultsExpression.ItemsSource = ProtocolExpression;
+            }
+            else
+            {
+
+                List<Protocol> messages = new List<Protocol>();
+                Protocol message = new Protocol();
+                message.pr_title = "לא נמצאו תוצאות";
+                messages.Add(message);
+                lsResultsExpression.ItemsSource = messages;
+
+            }
         }
 
 
@@ -447,12 +322,13 @@ namespace knesset_app
 
 
 
-        private void wordNum_TextChanged(object sender, EventArgs e)
+        private void numericTxt_Change(object sender, EventArgs e)
         {
-            if (!System.Text.RegularExpressions.Regex.IsMatch(wordNum.Text, "^[0-9]*$"))
+            if (sender == null || !(sender is TextBox)) return;
+            TextBox textBox = sender as TextBox;
+            if (!Regex.IsMatch(textBox.Text, "^[0-9]*$"))
             {
-                wordNum.Text = wordNum.Text.Substring(0, wordNum.Text.Length == 0 ? 0 : wordNum.Text.Length - 1);
-                wordNum.CaretIndex = wordNum.Text.Length;
+                textBox.Text = Regex.Replace(textBox.Text, "[^0-9]", "");
             }
         }
 
