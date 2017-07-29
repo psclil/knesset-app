@@ -32,6 +32,20 @@
             </StackPanel>
         </DataTemplate>
 
+
+        <!--<this is a template for the Expression serach>-->
+        <DataTemplate x:Key="ExpressionDisplay" DataType="db:ParagraphWord">
+            <StackPanel Margin="0 8">
+                <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding c_name}" FontWeight="DemiBold"/>
+                <TextBlock FontSize="12" TextWrapping="NoWrap">
+                     <Run> ..."  </Run>
+                    <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
+                    <Run> "...  </Run>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+        
         <DataTemplate x:Key="ProtocolDisplay" DataType="db:Protocol">
             <StackPanel Margin="0 8">
                 <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding pr_title}" />

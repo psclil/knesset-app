@@ -1,20 +1,20 @@
-﻿<Window x:Class="knesset_app.SearchWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
      
         xmlns:local="clr-namespace:knesset_app"
+        xmlns:DBEntities="clr-namespace:knesset_app.DBEntities" 
+    
+        x:Class="knesset_app.SearchWindow"
         mc:Ignorable="d"
-        Title="SearchWindow" Height="697.684" Width="900">
+        Title="חלון חיפוש" Height="697.684" Width="900">
 
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </Window.Resources>
-    
-    
+
+
     <TabControl HorizontalAlignment="Left"  Margin="0,0,0,-1" Width="892"  FlowDirection="LeftToRight"   SelectionChanged="TabControl_SelectionChanged" >
-        <TabItem  Name="tiBackwardSearch" Header="חיפוש הפוך" IsSelected="True" Margin="-2,-2,-153,-12" FontSize="16"  >
+        <TabItem  x:Name="tiBackwardSearch" Header="חיפוש הפוך" IsSelected="True" Margin="-2,-2,-153,-12" FontSize="16"  >
             <Grid HorizontalAlignment="Center" Height="610"  VerticalAlignment="Top" FlowDirection="RightToLeft"  Width="879" Margin="-1,15,8,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
@@ -35,22 +35,23 @@
 
 
                 <TextBlock Text="פרוטוקול" Grid.Column="1" HorizontalAlignment="Left" Margin="26,15,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" Width="103.667" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
-                <TextBox Name="protocolName" Grid.Column="2" HorizontalAlignment="Left" Height="34" Margin="24,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="558" Grid.ColumnSpan="2"/>
+                <TextBox x:Name="protocolName" Grid.Column="2" HorizontalAlignment="Left" Height="34" Margin="24,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="558" Grid.ColumnSpan="2"/>
 
-                <CheckBox Name="checkSpeakerBox" Content="חיפוש לפי דובר" Checked="CheckBox_Checked" IsChecked="False" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="19,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="130" />
+                <CheckBox x:Name="checkSpeakerBox" Content="חיפוש לפי דובר" Checked="CheckBox_Changes" Unchecked="CheckBox_Changes" IsChecked="False" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="19,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="130" />
 
-                <Viewbox Name="WordNumSearch" Grid.ColumnSpan="2" Grid.Column="1" Margin="26,10,161,8" Grid.Row="3" Grid.RowSpan="2" 
-                         Stretch="Fill" Visibility="{Binding IsVisible, ElementName=checkSpeakerBox }">
+
+                <Viewbox x:Name="WordNumSearch" Grid.ColumnSpan="2" Grid.Column="1" Margin="26,10,161,8" Grid.Row="3" Grid.RowSpan="2" 
+                         Stretch="Fill"  IsHitTestVisible="True">
                     <Grid Height="84" Width="355">
 
                         <TextBlock Text="מספר פסקה" HorizontalAlignment="Left" Margin="0,6,0,0" TextWrapping="Wrap" Height="21" Width="104" FontSize="16" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBlock Text="מספר מילה" HorizontalAlignment="Left" Margin="0,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" Width="104" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBox x:Name="paragraphNum" HorizontalAlignment="Left" Height="33" Margin="147,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
-                        <TextBox x:Name="wordNum" HorizontalAlignment="Left" Height="33" Margin="147,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
+                        <TextBox x:Name="wordNum" TextChanged="wordNum_TextChanged" HorizontalAlignment="Left" Height="33" Margin="147,51,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" />
                     </Grid>
                 </Viewbox>
-                <Viewbox Name="SpeakerSearch" Margin="26,7,87,-58" Stretch="Fill" Visibility="{Binding IsChecked, ElementName=checkSpeakerBox,Converter={StaticResource BoolToVis } ,ConverterParameter=true }" Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Grid.Row="3">
-                    <Grid Height="133" Width="417">
+                <Viewbox x:Name="SpeakerSearch" Margin="26,7,87,-58" Visibility="Hidden" Stretch="Fill" Grid.ColumnSpan="2" Grid.Column="1" Grid.RowSpan="2" Grid.Row="3">
+                    <Grid Height="133" Width="417" IsHitTestVisible="True">
                         <TextBlock Text="שם הדובר" Margin="0,6,313,0" TextWrapping="Wrap" Height="21" FontSize="16" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBlock Text="מספר פסקה של הדובר" Margin="0,57,248,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="21" FontSize="16"><Run FlowDirection="RightToLeft" /></TextBlock>
                         <TextBox x:Name="SpkeakerName" HorizontalAlignment="Left" Height="33" Margin="209,0,0,0" TextWrapping="Wrap" Text="" Width="208" VerticalAlignment="Top"/>
@@ -66,7 +67,7 @@
                 <Button x:Name ="btnSearchBackwards" Content="חפש" Click="btnSearch_Backwards" Grid.Column="2" HorizontalAlignment="Left" Margin="221,131,0,-118" Grid.Row="4" VerticalAlignment="Top" Width="144" Height="38" FontSize="16"/>
 
 
-                <ListBox Name="lstResultsBackwardSearch" Grid.Column="1" HorizontalAlignment="Left" Height="188" Margin="34,187,0,-324" Grid.Row="4" VerticalAlignment="Top" Width="797" Grid.ColumnSpan="3" ItemTemplate="{StaticResource WordDisplay}"  />
+                <ListBox x:Name="lstResultsBackwardSearch" Grid.Column="1" HorizontalAlignment="Left" Height="188" Margin="34,187,0,-324" Grid.Row="4" VerticalAlignment="Top" Width="797" Grid.ColumnSpan="3" ItemTemplate="{StaticResource WordDisplay}"  />
             </Grid>
 
 
@@ -75,7 +76,7 @@
 
 
 
-        <TabItem   Name="tiSearchCommitties" Header="נוכחים/מוזמנים/כותרת/וועדה" IsSelected="True" Margin="153,-2,-240,-12" FontSize="16">
+        <TabItem   x:Name="tiSearchCommitties" Header="נוכחים/מוזמנים/כותרת/וועדה" IsSelected="True" Margin="153,-2,-240,-12" FontSize="16">
             <Grid HorizontalAlignment="Center" Height="620"  VerticalAlignment="Center" FlowDirection="RightToLeft"  Width="879" Margin="-2,12,7,-2" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -102,15 +103,15 @@
                         <RowDefinition Height="2*"/>
                     </Grid.RowDefinitions>
                     <DatePicker x:Name="dpFromDate" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="6.339,13.471,4.339,4.47" Width="185" Height="35" VerticalContentAlignment="Center" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="2.333,0.521" Margin="16.154,18.33,162.154,13.33">עד</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="2.333,0.521" Margin="16.154,18.33,162.154,13.33"><Run Text="עד"/></TextBlock>
                     <DatePicker  x:Name="dpToDate" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="50.5,13.471,155.857,4.47" Width="185" Height="35" Grid.ColumnSpan="2" VerticalContentAlignment="Center" />
                 </Grid>
 
-                <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1">החל מ</TextBlock>
-                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,41.482,10" Width="66" Grid.Column="1">כותרת</TextBlock>
-                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1">וועדה</TextBlock>
-                <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1">מוזמנים</TextBlock>
-                <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,41.482,10" Width="66" Grid.Column="1" >נוכחים</TextBlock>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1"><Run Text="החל מ"/></TextBlock>
+                <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,41.482,10" Width="66" Grid.Column="1"><Run Text="כותרת"/></TextBlock>
+                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1"><Run Text="וועדה"/></TextBlock>
+                <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,50.482,10" Width="57" Grid.Column="1"><Run Text="מוזמנים"/></TextBlock>
+                <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23.5" Margin="41.501,16.5,41.482,10" Width="66" Grid.Column="1" ><Run Text="נוכחים"/></TextBlock>
 
 
 
@@ -120,15 +121,15 @@
                 <TextBox x:Name ="cbInvited" Grid.Row="3" Grid.Column="2" Margin="5,5,140,5"  Height="40" />
                 <TextBox x:Name ="cbPersence"   Grid.Row="4" Grid.Column="2" Margin="5,5,140,5" Height="40" />
 
-                <Button x:Name ="btnSearch"   Grid.Row="5" Grid.Column="2" Click="btnSearch_Click" Margin="221,10,350,0" Height="40" VerticalAlignment="Top">חפש</Button>
-                <Button x:Name ="btnClearFields"   Grid.Row="5" Grid.Column="2" Click="btnClearFields_Click" Margin="605,16,16,0" Height="29" VerticalAlignment="Top">נקה</Button>
+                <Button x:Name ="btnSearch"   Grid.Row="5" Grid.Column="2" Click="btnSearch_Click" Margin="221,10,350,0" Height="40" VerticalAlignment="Top" Content="חפש"/>
+                <Button x:Name ="btnClearFields"   Grid.Row="5" Grid.Column="2" Click="btnClearFields_Click" Margin="605,16,16,0" Height="29" VerticalAlignment="Top" Content="נקה"/>
 
-                <ListBox Name="lstResults"  Grid.Row="6" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Margin="21,19,28,-220" Grid.Column="1" ItemTemplate="{StaticResource ProtocolDisplay}" SelectionChanged="openChosenProtocol"/>
+                <ListBox x:Name="lstResults"  Grid.Row="6" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2" Margin="21,19,28,-220" Grid.Column="1" ItemTemplate="{StaticResource ProtocolDisplay}" SelectionChanged="openChosenProtocol"/>
 
 
             </Grid>
         </TabItem>
-        <TabItem  Name="tiExpressionSearch" Header="מילה/ביטוי לשוני" Margin="240,-2,-382,-12" FontSize="16">
+        <TabItem  x:Name="tiExpressionSearch" Header="מילה/ביטוי לשוני" Margin="240,-2,-382,-12" FontSize="16" >
             <Grid HorizontalAlignment="Center" Height="618"  VerticalAlignment="Bottom" FlowDirection="RightToLeft"  Width="879" Margin="-2,0,7,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -142,12 +143,16 @@
 
 
                 </Grid.RowDefinitions>
-                <ComboBox Grid.Column="2" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="546" Height="40"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="18.983,17,0,0" Grid.Row="1" TextWrapping="Wrap" Text="ביטוי/מילה" VerticalAlignment="Top" Width="120" BorderBrush="{x:Null}"/>
-                <ListBox Grid.Column="1" HorizontalAlignment="Left" Height="318" Margin="18.983,212,0,-480" Grid.Row="1" VerticalAlignment="Top" Width="838.017" Grid.ColumnSpan="2"/>
-                <Button x:Name ="btnSearchWord" Grid.Column="2" HorizontalAlignment="Left" Margin="197,98,0,-82" Grid.Row="1" VerticalAlignment="Top" Width="152" Height="34" >
+                
+                <ComboBox x:Name="dpListExpression" IsEditable="True"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="546" Height="40" IsTextSearchEnabled="True"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Left" AutoWordSelection="True" Height="23" Margin="18.983,17,0,0" Grid.Row="1" TextWrapping="Wrap" Text="ביטוי/מילה" VerticalAlignment="Top" Width="120" BorderBrush="{x:Null}"/>
+                <ListBox Name="lsResultsExpression" Grid.Column="1" HorizontalAlignment="Left" Height="318" Margin="18.983,212,0,-480" Grid.Row="1" VerticalAlignment="Top" Width="838.017" Grid.ColumnSpan="2"/>
+                <Button x:Name ="btnExpressionSearch" Click="btnSerach_Expression" Grid.Column="2" HorizontalAlignment="Left" Margin="197,98,0,-82" Grid.Row="1" VerticalAlignment="Top" Width="152" Height="34" >
                     <Button Content="חפש" Width="75" Background="{x:Null}" BorderBrush="{x:Null}" />
                 </Button>
+                <TextBox x:Name="tbListExpression" AutoWordSelection="True" Grid.Column="2" HorizontalAlignment="Left" Height="33" Margin="10,60,0,-43" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="536" TextChanged="tbListExpression_TextChanged"/>
+  
+
             </Grid>
         </TabItem>
 
