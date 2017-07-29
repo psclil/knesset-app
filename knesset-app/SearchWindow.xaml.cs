@@ -140,11 +140,17 @@ namespace knesset_app
                 foreach (string temps in split)
                 {
                     invitedListQuery = invitedListQuery.Where(x => x.invitations.Any(i => i.pn_name == temps));
-
+                  //  x.c_name == i.c_name && x.pr_number == i.pr_number
                 }
 
+                List<Protocol> invitedProt22 =
+                                 (from p in context.Protocols
+                                 join i in invitedListQuery
+                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }                             
+                                 select p
+                             ).ToList();
 
-                foreach (var prot in invitedListQuery)
+                foreach (var prot in invitedProt22)
                 {
                     invitedProtocolList.AddRange(invitedListQuery.Where(x => x.c_name == prot.c_name && x.pr_number == prot.pr_number));
                 }
@@ -204,7 +210,7 @@ namespace knesset_app
                                  join i in invitedProtocolList
                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
                                  select p
-                             ).ToList().Distinct(new ProtocolsComparer()).ToList();
+                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
 
 
                 }
@@ -215,9 +221,9 @@ namespace knesset_app
                 {
                     protocols = (from p in protocols
                                  join i in presenceProtocolList
-                                     on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
+                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
                                  select p
-                             ).ToList().Distinct(new ProtocolsComparer()).ToList();
+                                 ).ToList().Distinct(new ProtocolsComparer()).ToList();
                 }
 
 
@@ -333,31 +339,96 @@ namespace knesset_app
         {
             string selectedExpression = string.Empty;
 
-            if (tbListExpression.Text != null && string.IsNullOrWhiteSpace(tbListExpression.Text.ToString()) == false)
+            List<Protocol> ProtocolExpression = new List<Protocol>();
+
+
+            if (string.IsNullOrWhiteSpace(tbListExpression.Text) == false)
             {
-                selectedExpression = tbListExpression.Text;
-
-
-                List<ParagraphWord> slecetedExpression = context.ParagraphWords.Where(j => j.word.Contains(selectedExpression)).ToList();
-
-
-                if (slecetedExpression != null && slecetedExpression.Count > 0)
+                string[] split = selectedExpression.Split(new char[' '], StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < split.Length; i++)
                 {
-                    // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
-                    lsResultsExpression.ItemsSource = slecetedExpression;
+                    split[i] = split[i].Trim();
                 }
-                else
+
+                if (split.Length < 6)
                 {
 
-                    List<Protocol> messages = new List<Protocol>();
-                    Protocol message = new Protocol();
-                    message.pr_title = "לא נמצאו תוצאות";
-                    messages.Add(message);
-                    lsResultsExpression.ItemsSource = messages;
+                    IQueryable<ParagraphWord> slecetedExpression = context.ParagraphWords;
+                    string temp;//= split[0];
+                    slecetedExpression = context.ParagraphWords.Where(x => (x.word == split[0]));
 
+                    for (int j = 1; j < split.Length; j++)
+                    {
+                        temp = split[j];
+                        slecetedExpression = slecetedExpression.Where(x => context.ParagraphWords.Any(i => (
+                        i.word == temp
+                        && 
+                        x.pr_number==i.pr_number 
+                        && 
+                        x.pg_number ==i.pg_number 
+                        &&
+                        x.word_number+1==i.word_number)));
+
+                    }
+                    IQueryable<Protocol>tempProtocolList = context.Protocols;
+
+
+                       for (int j = 1; j < split.Length; j++)
+                    {
+                        temp = split[j];
+                        slecetedExpression = slecetedExpression.Where(x => context.ParagraphWords.Any(i => (
+                        i.word == temp
+                        &&
+                        x.c_name == i.c_name
+                        &&
+                        x.pr_number==i.pr_number 
+                        && 
+                        x.pg_number ==i.pg_number 
+                        &&
+                        x.word_number+1==i.word_number)));
+
+                        tempProtocolList = tempProtocolList.Where(x => slecetedExpression.Any(i => 
+                        x.c_name == i.c_name
+                        &&
+                        x.pr_number == i.pr_number
+                        ));
+                    }
+
+                    List<Protocol> invitedProt22 =
+                             (from p in context.Protocols
+                              join i in tempProtocolList
+                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
+                              select p
+                         ).ToList();
+
+
+                    foreach (var prot in invitedProt22)
+                    {
+                        ProtocolExpression.AddRange(tempProtocolList.Where(x => x.c_name == prot.c_name && x.pr_number == prot.pr_number));
+
+                    }
+
+
+
+
+
+                    if (ProtocolExpression != null && ProtocolExpression.Count > 0)
+                    {
+                        // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
+                        lsResultsExpression.ItemsSource = ProtocolExpression;
+                    }
+                    else
+                    {
+
+                        List<Protocol> messages = new List<Protocol>();
+                        Protocol message = new Protocol();
+                        message.pr_title = "לא נמצאו תוצאות";
+                        messages.Add(message);
+                        lsResultsExpression.ItemsSource = messages;
+
+                    }
                 }
             }
-
 
         }
 
