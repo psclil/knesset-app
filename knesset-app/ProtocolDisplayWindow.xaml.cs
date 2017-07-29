@@ -22,7 +22,9 @@ namespace knesset_app
             {
                 protocol = context.Protocols.Find(p.c_name, p.pr_number); // reload the protocol in the current context
                 context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList(); // preload all the paragraph words
-                var tmp = protocol.paragraphs; // load all the paragraphs so we can display them
+                object tmp = protocol.paragraphs.ToList(); // load all the paragraphs so we can display them
+                tmp = protocol.persence.ToList();
+                tmp = protocol.invitations.ToList();
             }
         }
     }

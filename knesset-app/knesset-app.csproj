@@ -80,6 +80,7 @@
     <Compile Include="CreateIndexWindow.xaml.cs">
       <DependentUpon>CreateIndexWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ListToStringConverter.cs" />
     <Compile Include="ProtocolDisplayWindow.xaml.cs">
       <DependentUpon>ProtocolDisplayWindow.xaml</DependentUpon>
     </Compile>
