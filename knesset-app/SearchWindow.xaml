@@ -155,7 +155,7 @@ mc:Ignorable="d"
                 </ComboBox>
                 
                 <TextBox Grid.Column="1" HorizontalAlignment="Left" AutoWordSelection="True" Height="23" Margin="18.983,17,0,0" Grid.Row="1" TextWrapping="Wrap" Text="ביטוי/מילה" VerticalAlignment="Top" Width="120" BorderBrush="{x:Null}"/>
-                <ListBox Name="lsResultsExpression"  ItemTemplate="{StaticResource ParagraphDisplay}"  Grid.Column="1" HorizontalAlignment="Left" Height="318" Margin="18.983,212,0,-480" Grid.Row="1" VerticalAlignment="Top" Width="838.017" Grid.ColumnSpan="2"/>
+                <ListBox Name="lsResultsExpression"  ItemTemplate="{StaticResource ExpressionDisplay}"  Grid.Column="1" HorizontalAlignment="Left" Height="318" Margin="18.983,212,0,-480" Grid.Row="1" VerticalAlignment="Top" Width="838.017" Grid.ColumnSpan="2"/>
                 <Button x:Name ="btnExpressionSearch" Click="btnSerach_Expression" Grid.Column="2" HorizontalAlignment="Left" Margin="197,98,0,-82" Grid.Row="1" VerticalAlignment="Top" Width="152" Height="34" Content="חפש" />
                 <!--<ComboBox IsEditable="True" Name="RemotePathComboBox" VerticalAlignment="Center"
           SelectionChanged="RemotePathComboBoxOnSelectionChanged"

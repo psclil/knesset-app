@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -66,6 +67,13 @@ namespace knesset_app
                 else
                     wordHandler(buffer.ToString());
             }
+        }
+
+        public List<string> ReadWords(string paragraphContent)
+        {
+            List<string> ret = new List<string>();
+            Read(paragraphContent, w => ret.Add(w), s => { });
+            return ret;
         }
 
         private enum ReadState

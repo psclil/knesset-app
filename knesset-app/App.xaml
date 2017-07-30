@@ -40,15 +40,15 @@
 
 
         <!--<this is a template for the Expression serach>-->
-        <DataTemplate x:Key="ExpressionDisplay" DataType="ParagraphMatch">
+        <DataTemplate x:Key="ExpressionDisplay" DataType="local:ParagraphMatch">
             <TextBlock TextWrapping="WrapWithOverflow" Margin="0 0 0 10">
                  <StackPanel Margin="0 8">
                 <TextBlock FontSize="16" TextWrapping="NoWrap">
-                    <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
+                    <Run Text="{Binding InParagraph.c_name}" FontWeight="DemiBold"/>
                     <Run> פרוטוקול </Run>
-                    <Run Text="{Binding pr_number}" FontWeight="DemiBold"/>
+                    <Run Text="{Binding InParagraph.pr_number}" FontWeight="DemiBold"/>
                     <Run>: </Run>
-                    <Run Text="{Binding paragraph.protocol.pr_title}"/>
+                    <Run Text="{Binding InParagraph.protocol.pr_title}"/>
                 </TextBlock>
                  <TextBlock FontSize="16" TextWrapping="NoWrap" local:TextBlockExtension.FormattedText="{Binding Path=Content, Mode=OneWay }" />
             </StackPanel>

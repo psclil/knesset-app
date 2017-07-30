@@ -286,52 +286,44 @@ namespace knesset_app
             char[] nameListSplit = new char[] { ' ' };
 
             string selectedExpression = dpListExpression.Text;
-            string[] split = selectedExpression.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < split.Length; i++)
-            {
-                split[i] = split[i].Trim();
-            }
+            ParagraphReader paragraphReader = new ParagraphReader();
+            List<string> searchWords = paragraphReader.ReadWords(selectedExpression);
 
-            if (split.Length >= 6)
+            if (searchWords.Count >= 6)
             {
                 MessageBox.Show("יותר מידי מילים בביטוי לחיפוש");
                 return;
             }
-            string firstWord = split[0];
+            string firstWord = searchWords[0];
+            context.Database.Log = Console.WriteLine;
             IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
 
-            for (int j = 1; j < split.Length; j++)
+            for (int j = 1; j < searchWords.Count; j++)
             {
-                string temp = split[j];
+                string temp = searchWords[j];
+                int tempI = j;
                 selecetedExpression = selecetedExpression.Where(x => context.ParagraphWords.Any(i => (
                 i.word == temp
-                &&
-                x.pr_number == i.pr_number
-                &&
-                x.pg_number == i.pg_number
-                &&
-                x.word_number + j == i.word_number)));
+                && x.c_name == i.c_name
+                && x.pr_number == i.pr_number
+                && x.pg_number == i.pg_number
+                && x.word_number + tempI == i.word_number)));
 
             }
 
-            List<ParagraphWord> results = selecetedExpression.Where(x => x.word == firstWord).ToList();
-
-
+            var results = selecetedExpression.Include("paragraph").ToList().Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
             if (results.Count > 0)
             {
-                // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
                 lsResultsExpression.ItemsSource = results;
             }
             else
             {
-
                 List<Protocol> messages = new List<Protocol>();
                 Protocol message = new Protocol();
                 message.pr_title = "לא נמצאו תוצאות";
                 messages.Add(message);
                 lsResultsExpression.ItemsSource = messages;
-
             }
         }
 
