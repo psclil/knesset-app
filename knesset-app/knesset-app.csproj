@@ -73,6 +73,7 @@
       <DependentUpon>CreateIndexWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ListToStringConverter.cs" />
+    <Compile Include="ParagraphMatch.cs" />
     <Compile Include="ProtocolDisplayWindow.xaml.cs">
       <DependentUpon>ProtocolDisplayWindow.xaml</DependentUpon>
     </Compile>

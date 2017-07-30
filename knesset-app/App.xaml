@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:knesset_app"
-             xmlns:db="clr-namespace:knesset_app.DBEntities"
+             xmlns:db="clr-namespace:knesset_app.DBEntities"             
              StartupUri="MainWindow.xaml">
+    
     <Application.Resources>
         <Style x:Key="KnessetWindow" TargetType="Window">
             <Setter Property="FlowDirection" Value="RightToLeft"/>
@@ -22,6 +23,7 @@
             <Setter Property="Foreground" Value="Red"></Setter>
         </Style>
         <local:ListToStringConverter x:Key="ListToStringConverter"/>
+        
         <!--<this is a template for the backwards serach>-->
         <DataTemplate x:Key="WordDisplay" DataType="db:ParagraphWord">
             <StackPanel Margin="0 8">
@@ -38,15 +40,19 @@
 
 
         <!--<this is a template for the Expression serach>-->
-        <DataTemplate x:Key="ExpressionDisplay" DataType="db:ParagraphWord">
-            <StackPanel Margin="0 8">
-                <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding c_name}" FontWeight="DemiBold"/>
-                <TextBlock FontSize="12" TextWrapping="NoWrap">
-                     <Run> ..."  </Run>
+        <DataTemplate x:Key="ExpressionDisplay" DataType="ParagraphMatch">
+            <TextBlock TextWrapping="WrapWithOverflow" Margin="0 0 0 10">
+                 <StackPanel Margin="0 8">
+                <TextBlock FontSize="16" TextWrapping="NoWrap">
                     <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
-                    <Run> "...  </Run>
+                    <Run> פרוטוקול </Run>
+                    <Run Text="{Binding pr_number}" FontWeight="DemiBold"/>
+                    <Run>: </Run>
+                    <Run Text="{Binding paragraph.protocol.pr_title}"/>
                 </TextBlock>
+                 <TextBlock FontSize="16" TextWrapping="NoWrap" local:TextBlockExtension.FormattedText="{Binding Path=Content, Mode=OneWay }" />
             </StackPanel>
+            </TextBlock>
         </DataTemplate>
 
 

@@ -67,11 +67,5 @@ namespace knesset_app.DBEntities
             return ret.ToString();
         }
 
-
- 
-
-
-
-
     }
 }
