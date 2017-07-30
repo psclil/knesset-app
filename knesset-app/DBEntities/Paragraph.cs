@@ -50,10 +50,11 @@ namespace knesset_app.DBEntities
         {
             int spaceFillerRead = 0;
             StringBuilder ret = new StringBuilder();
-            foreach (ParagraphWord pWord in words.OrderBy(w=>w.pg_offset))
+            foreach (ParagraphWord pWord in words.OrderBy(w => w.pg_offset))
             {
                 int spaceFillerNeeded = pWord.pg_offset - ret.Length;
-                if (spaceFillerNeeded > 0) {
+                if (spaceFillerNeeded > 0)
+                {
                     ret.Append(pg_space_fillers.Substring(spaceFillerRead, spaceFillerNeeded));
                     spaceFillerRead += spaceFillerNeeded;
                 }
@@ -65,5 +66,12 @@ namespace knesset_app.DBEntities
             }
             return ret.ToString();
         }
+
+
+ 
+
+
+
+
     }
 }

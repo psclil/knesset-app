@@ -84,5 +84,6 @@
                 <Run Text="{Binding OriginalText,Mode=OneTime}"/>
             </TextBlock>
         </DataTemplate>
+
     </Application.Resources>
 </Application>

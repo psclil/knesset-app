@@ -6,37 +6,18 @@ using System.Windows.Controls;
 using knesset_app.DBEntities;
 using System.Data.Entity;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace knesset_app
 {
-
-    public class ProtocolsComparer : IEqualityComparer<Protocol>
-    {
-        public bool Equals(Protocol x, Protocol y)
-        {
-            if (x.pr_number == y.pr_number && x.c_name == y.c_name)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public int GetHashCode(Protocol obj)
-        {
-            return obj.pr_number.GetHashCode();
-        }
-    }
-
 
     /// <summary>
     /// Interaction logic for SearchWindow.xaml
     /// </summary>
     public partial class SearchWindow : Window
     {
-        int MAX_COMMITTIE = 1000;
+        int MAX_COMBOXLIST = 1000;
         Boolean IsSpeakerTRUE = false;
 
         KnessetContext context = new KnessetContext();
@@ -45,15 +26,46 @@ namespace knesset_app
         {
             InitializeComponent();
             PopulateComboboxes();
-            fillComboboxes();
+            dpListExpression.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
         }
 
         private void PopulateComboboxes()
         {
-            cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_COMMITTIE).ToList();
+            cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_COMBOXLIST).ToList();
             cbProtocolCommitte.DisplayMemberPath = "c_name";
             cbProtocolCommitte.SelectedValuePath = "c_name";
+
+            dpListExpression.ItemsSource = context.Phrases.Take(MAX_COMBOXLIST).ToList();
+            dpListExpression.DisplayMemberPath = "phrase";
+            dpListExpression.SelectedValuePath = "phrase";
         }
+
+
+
+        private void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var comboBoxItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+
+            if (comboBoxItem == null) return;
+            comboBoxItem.IsSelected = true;
+            e.Handled = true;
+        }
+
+        private ComboBoxItem VisualUpwardSearch(DependencyObject source)
+        {
+            while (source != null && !(source is ComboBoxItem))
+                source = VisualTreeHelper.GetParent(source);
+
+            return source as ComboBoxItem;
+        }
+
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            dpListExpression.Items.Remove(dpListExpression.SelectedItem);
+        }
+
+
+
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -82,7 +94,6 @@ namespace knesset_app
             dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
 
             PopulateComboboxes();
-            fillComboboxes();
             cbInvited.Text = null;
             cbPersence.Text = null;
         }
@@ -117,6 +128,9 @@ namespace knesset_app
             if (toDate.HasValue)
                 relevantProtocols = relevantProtocols.Where(x => x.pr_date <= toDate);
 
+
+
+            //invidted field
             char[] nameListSplit = new char[] { ',' };
 
             if (!string.IsNullOrWhiteSpace(cbInvited.Text))
@@ -133,6 +147,9 @@ namespace knesset_app
                 }
             }
 
+
+
+            //Persences field
             if (string.IsNullOrWhiteSpace(cbPersence.Text) == false)
             {
                 string[] split = cbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
@@ -147,6 +164,10 @@ namespace knesset_app
                 }
             }
 
+
+
+
+            // display results
             List<Protocol> protocols = relevantProtocols.ToList();
 
             if (protocols != null && protocols.Count > 0)
@@ -180,11 +201,15 @@ namespace knesset_app
                 int selectedWordNum = int.Parse(wordNum.Text);
 
 
-                IQueryable<Protocol> relevantProtocols = context.Protocols.Where(i => i.pr_title.Contains(selectedProcotocolName));
+                IQueryable<Protocol> relevantProtocols = context.Protocols;
                 searchedWords = (from p in context.ParagraphWords
                                  join i in relevantProtocols
                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 where p.pg_number == selectedParagraphNum && p.word_number == selectedWordNum
+                                 where p.pg_number == selectedParagraphNum
+                                 &&
+                                 p.word_number == selectedWordNum
+                                 &&
+                                 i.pr_title.Contains(selectedProcotocolName)
                                  select p
                              ).ToList();
 
@@ -193,7 +218,6 @@ namespace knesset_app
             // serach by speaker
             else
             {
-
                 string speakerName = string.Empty;
                 selectedProcotocolName = protocolName.Text;
                 speakerName = SpkeakerName.Text;
@@ -210,17 +234,19 @@ namespace knesset_app
                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
                                  join r in relevantParagraphs
                                  on new { p.c_name, p.pr_number, p.pg_number } equals new { r.c_name, r.pr_number, r.pg_number }
-                                 where p.pg_offset == paragraphSpekerOffset 
-                                 && 
+                                 where p.pg_offset == paragraphSpekerOffset
+                                 &&
                                  i.pr_title.Contains(selectedProcotocolName)
-                                 && r.pn_name.Contains(speakerName)
-                                 && r.pn_pg_number == paragraphSpekerNum
+                                 &&
+                                 r.pn_name.Contains(speakerName)
+                                 &&
+                                 r.pn_pg_number == paragraphSpekerNum
                                  select p
                              ).ToList();
             }
 
 
-
+            // display results
             if (searchedWords.Count > 0)
             {
                 lstResultsBackwardSearch.ItemsSource = searchedWords;
@@ -241,15 +267,13 @@ namespace knesset_app
 
 
 
-        private void fillComboboxes()
-        {
 
-            dpListExpression.ItemsSource = context.Phrases.Take(MAX_COMMITTIE).ToList();
-            dpListExpression.DisplayMemberPath = "phrase";
-            dpListExpression.SelectedValuePath = "phrase";
-
-
-        }
+        //private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    var menuItem = (MenuItem)sender;
+        //    var ctxMenu = (ContextMenu)menuItem.Parent;
+        //    var comboBoxItem = (ComboBoxItem)ctxMenu.PlacementTarget;
+        //}
 
 
         private void btnSerach_Expression(object sender, RoutedEventArgs e)
@@ -259,8 +283,10 @@ namespace knesset_app
                 MessageBox.Show("חובה להכניס ביטוי לחיפוש");
                 return;
             }
+            char[] nameListSplit = new char[] { ' ' };
+
             string selectedExpression = dpListExpression.Text;
-            string[] split = selectedExpression.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] split = selectedExpression.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < split.Length; i++)
             {
                 split[i] = split[i].Trim();
@@ -288,12 +314,14 @@ namespace knesset_app
 
             }
 
-            List<ParagraphWord> results = selecetedExpression.ToList();
+            List<ParagraphWord> results = selecetedExpression.Where(x => x.word == firstWord).ToList();
+
+
 
             if (results.Count > 0)
             {
                 // context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList();
-                //lsResultsExpression.ItemsSource = ProtocolExpression;
+                lsResultsExpression.ItemsSource = results;
             }
             else
             {
@@ -361,8 +389,14 @@ namespace knesset_app
 
         }
 
-        private void tbListExpression_TextChanged(object sender, TextChangedEventArgs e)
+        private void dpListExpression_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //if (dpListExpression.SelectedIndex >= 0)
+            //{
+
+            //    dpListExpression.Items.RemoveAt(dpListExpression.SelectedIndex);
+            //    return;
+            //}
 
         }
     }
