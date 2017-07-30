@@ -9,7 +9,7 @@ namespace knesset_app
 {
     public class ParagraphMatch
     {
-        const int MAX_WORDS_PADDING = 20;
+        const int MAX_WORDS_PADDING = 15;
 
         public Inline Content { get; protected set; }
         public DBEntities.Paragraph InParagraph { get; protected set; }
@@ -43,6 +43,7 @@ namespace knesset_app
                             content.Inlines.Add(new Run(buffer.ToString()));
                             buffer.Clear();
                             state = ReadState.Highlight;
+                            goto case ReadState.Highlight;
                         }
                         buffer.Append(pWord.word);
                         charsRead += pWord.word.Length;
@@ -65,6 +66,9 @@ namespace knesset_app
                             buffer.Append(pWord.word);
                             charsRead += pWord.word.Length;
                         }
+                        break;
+                    default:
+                        charsRead += pWord.word.Length;
                         break;
                 }
             }

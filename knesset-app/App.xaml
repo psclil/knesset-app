@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:knesset_app"
              xmlns:db="clr-namespace:knesset_app.DBEntities"             
              StartupUri="MainWindow.xaml">
-    
+
     <Application.Resources>
         <Style x:Key="KnessetWindow" TargetType="Window">
             <Setter Property="FlowDirection" Value="RightToLeft"/>
@@ -23,7 +23,7 @@
             <Setter Property="Foreground" Value="Red"></Setter>
         </Style>
         <local:ListToStringConverter x:Key="ListToStringConverter"/>
-        
+
         <!--<this is a template for the backwards serach>-->
         <DataTemplate x:Key="WordDisplay" DataType="db:ParagraphWord">
             <StackPanel Margin="0 8">
@@ -41,8 +41,7 @@
 
         <!--<this is a template for the Expression serach>-->
         <DataTemplate x:Key="ExpressionDisplay" DataType="local:ParagraphMatch">
-            <TextBlock TextWrapping="WrapWithOverflow" Margin="0 0 0 10">
-                 <StackPanel Margin="0 8">
+            <StackPanel Margin="0 8">
                 <TextBlock FontSize="16" TextWrapping="NoWrap">
                     <Run Text="{Binding InParagraph.c_name}" FontWeight="DemiBold"/>
                     <Run> פרוטוקול </Run>
@@ -50,9 +49,8 @@
                     <Run>: </Run>
                     <Run Text="{Binding InParagraph.protocol.pr_title}"/>
                 </TextBlock>
-                 <TextBlock FontSize="16" TextWrapping="NoWrap" local:TextBlockExtension.FormattedText="{Binding Path=Content, Mode=OneWay }" />
+                <TextBlock FontSize="16" TextWrapping="WrapWithOverflow" local:TextBlockExtension.FormattedText="{Binding Path=Content, Mode=OneWay}" />
             </StackPanel>
-            </TextBlock>
         </DataTemplate>
 
 
