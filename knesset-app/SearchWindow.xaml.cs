@@ -295,7 +295,7 @@ namespace knesset_app
                 return;
             }
             string firstWord = searchWords[0];
-            context.Database.Log = Console.WriteLine;
+            //context.Database.Log = Console.WriteLine;
             IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
 
             for (int j = 1; j < searchWords.Count; j++)
@@ -311,7 +311,7 @@ namespace knesset_app
 
             }
 
-            var results = selecetedExpression.Include("paragraph").ToList().Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
+            var results = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList().Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
             if (results.Count > 0)
             {
