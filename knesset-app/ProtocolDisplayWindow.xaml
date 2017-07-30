@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ContentControl Padding="8" Grid.Row="0" ContentTemplate="{StaticResource ProtocolDisplayFull}" Content="{Binding}"/>
+        <ContentControl Padding="8" Grid.Row="0" ContentTemplate="{StaticResource ProtocolDisplayFull}" Content="{Binding}" Margin="8 8 8 0"/>
         <ScrollViewer Grid.Row="1">
             <ItemsControl Margin="8" FontSize="15" ItemTemplate="{StaticResource ParagraphDisplay}" ItemsSource="{Binding paragraphs}" />
         </ScrollViewer>

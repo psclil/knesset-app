@@ -12,6 +12,8 @@ namespace knesset_app
             if (targetType != typeof(string))
                 throw new InvalidOperationException("The target must be a String");
 
+            if (value == null) return string.Empty;
+
             if (value is ICollection<DBEntities.Presence>)
             {
                 value = ((ICollection<DBEntities.Presence>)value).Select(x => x.pn_name).ToList();
