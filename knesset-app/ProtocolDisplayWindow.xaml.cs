@@ -1,5 +1,6 @@
 ﻿using knesset_app.DBEntities;
 using System.Windows;
+using System.Data.Entity;
 using System;
 using System.Linq;
 
@@ -20,11 +21,11 @@ namespace knesset_app
         {
             using (KnessetContext context = new KnessetContext())
             {
-                protocol = context.Protocols.Find(p.c_name, p.pr_number); // reload the protocol in the current context
-                context.Paragraphs.Include("words").Where(x => x.c_name == protocol.c_name && x.pr_number == protocol.pr_number).ToList(); // preload all the paragraph words
-                object tmp = protocol.paragraphs.ToList(); // load all the paragraphs so we can display them
-                tmp = protocol.persence.ToList();
-                tmp = protocol.invitations.ToList();
+                // load protocol + paragraphs + words
+                protocol = context.Protocols.Include("paragraphs.words").First(x => x.c_name == p.c_name && x.pr_number == p.pr_number);
+                var entry = context.Entry(protocol);
+                entry.Collection(pr => pr.persence).Load(); // load presence
+                entry.Collection(pr => pr.invitations).Load(); // load invitations
             }
         }
     }
