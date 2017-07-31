@@ -19,8 +19,8 @@ namespace knesset_app
     {
         int MAX_COMBOXLIST = 1000;
         Boolean IsSpeakerTRUE = false;
-
         KnessetContext context = new KnessetContext();
+
 
         public SearchWindow()
         {
@@ -28,6 +28,8 @@ namespace knesset_app
             PopulateComboboxes();
             dpListExpression.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
         }
+
+
 
         private void PopulateComboboxes()
         {
@@ -38,30 +40,6 @@ namespace knesset_app
             dpListExpression.ItemsSource = context.Phrases.Take(MAX_COMBOXLIST).ToList();
             dpListExpression.DisplayMemberPath = "phrase";
             dpListExpression.SelectedValuePath = "phrase";
-        }
-
-
-
-        private void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var comboBoxItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-
-            if (comboBoxItem == null) return;
-            comboBoxItem.IsSelected = true;
-            e.Handled = true;
-        }
-
-        private ComboBoxItem VisualUpwardSearch(DependencyObject source)
-        {
-            while (source != null && !(source is ComboBoxItem))
-                source = VisualTreeHelper.GetParent(source);
-
-            return source as ComboBoxItem;
-        }
-
-        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            dpListExpression.Items.Remove(dpListExpression.SelectedItem);
         }
 
 
@@ -88,14 +66,17 @@ namespace knesset_app
 
         private void btnClearFields_Click(object sender, RoutedEventArgs e)
         {
+
+            // Committee Tab
             cbProtocolTitle.Text = string.Empty;
             cbProtocolCommitte.Text = string.Empty;
-            cbProtocolCommitte.SelectedIndex = -1;
+            cbProtocolCommitte.Text = string.Empty;
             cbInvited.Text = null;
             cbPersence.Text = null;
             dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
-            PopulateComboboxes();
+            lstResults.ItemsSource = string.Empty;
 
+            // Backward Tab
             protocolName.Text = string.Empty;
             PgOffset.Text = string.Empty;
             SpkeakerName.Text = string.Empty;
@@ -103,13 +84,13 @@ namespace knesset_app
             PgSpeakerNum.Text = null;
             paragraphNum.Text = null;
             wordNum.Text = null;
+            lstResultsBackwardSearch.ItemsSource = string.Empty;
 
+            // Expression Tab
             dpListExpression.Text = string.Empty;
             dpListExpression.SelectedIndex = -1;
-
             lsResultsExpression.ItemsSource = string.Empty;
-            lstResults.ItemsSource = string.Empty;
-            lstResultsBackwardSearch.ItemsSource = string.Empty;
+
         }
 
 
@@ -210,12 +191,12 @@ namespace knesset_app
 
             if (!IsSpeakerTRUE)
             {
-               
-                    if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
-                    {
-                        MessageBox.Show("חובה למלא את כל השדות");
-                        return;
-                    }
+
+                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
+                {
+                    MessageBox.Show("חובה למלא את כל השדות");
+                    return;
+                }
                 selectedProcotocolName = protocolName.Text;
                 int selectedParagraphNum = int.Parse(paragraphNum.Text);
                 int selectedWordNum = int.Parse(wordNum.Text);
@@ -237,8 +218,8 @@ namespace knesset_app
             // serach by speaker
             else
             {
-                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(SpkeakerName.Text) 
-                    || string.IsNullOrWhiteSpace(PgSpeakerNum.Text)|| string.IsNullOrWhiteSpace(PgOffset.Text)) 
+                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(SpkeakerName.Text)
+                    || string.IsNullOrWhiteSpace(PgSpeakerNum.Text) || string.IsNullOrWhiteSpace(PgOffset.Text))
                 {
                     MessageBox.Show("חובה למלא את כל השדות");
                     return;
@@ -288,17 +269,6 @@ namespace knesset_app
 
         }
 
-
-
-
-
-
-        //private void MenuItem_OnClick(object sender, RoutedEventArgs e)
-        //{
-        //    var menuItem = (MenuItem)sender;
-        //    var ctxMenu = (ContextMenu)menuItem.Parent;
-        //    var comboBoxItem = (ComboBoxItem)ctxMenu.PlacementTarget;
-        //}
 
 
         private void btnSerach_Expression(object sender, RoutedEventArgs e)
@@ -353,19 +323,6 @@ namespace knesset_app
         }
 
 
-        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
-
-
-
-        protected void SpecializedSoftware_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-
 
         private void numericTxt_Change(object sender, EventArgs e)
         {
@@ -406,6 +363,50 @@ namespace knesset_app
 
         }
 
+
+
+
+
+
+
+
+
+
+
+        //private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    var menuItem = (MenuItem)sender;
+        //    var ctxMenu = (ContextMenu)menuItem.Parent;
+        //    var comboBoxItem = (ComboBoxItem)ctxMenu.PlacementTarget;
+        //}
+
+
+
+
+
+        private void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var comboBoxItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+
+            if (comboBoxItem == null) return;
+            comboBoxItem.IsSelected = true;
+            e.Handled = true;
+        }
+
+        private ComboBoxItem VisualUpwardSearch(DependencyObject source)
+        {
+            while (source != null && !(source is ComboBoxItem))
+                source = VisualTreeHelper.GetParent(source);
+
+            return source as ComboBoxItem;
+        }
+
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            dpListExpression.Items.Remove(dpListExpression.SelectedItem);
+        }
+
+
         private void dpListExpression_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //if (dpListExpression.SelectedIndex >= 0)
@@ -416,5 +417,57 @@ namespace knesset_app
             //}
 
         }
+
+
+
+        private void AddExpreesion(object sender, RoutedEventArgs e)
+        {
+            string expressionToAdd = string.IsNullOrEmpty(dpListExpression.Text) ? string.Empty : dpListExpression.Text.Trim();
+            if (string.IsNullOrWhiteSpace(expressionToAdd))
+            {
+                MessageBox.Show("ערך לא חוקי");
+                dpListExpression.Text = string.Empty;
+                return;
+            }
+            try
+            {
+                using (KnessetContext context = new KnessetContext())
+                {
+                    Phrase existing = context.Phrases.Find(expressionToAdd);
+                    if (existing != null)
+                    {
+                        MessageBox.Show("כבר קיים ביטוי כזה");
+                        return;
+                    }
+                    Phrase reader = new Phrase { phrase = expressionToAdd };
+                    context.Phrases.Add(reader);
+                    context.SaveChanges();
+                }
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+
+        private void DeleteGroup(object sender, RoutedEventArgs e)
+        {
+
+            string expressionToRemove = dpListExpression.SelectedItem.ToString();
+            using (KnessetContext context = new KnessetContext())
+            {
+                Phrase reader = context.Phrases.Find(expressionToRemove);
+                context.Phrases.Remove(reader);
+                context.SaveChanges();
+                //   Phrase reader = dpListExpression.SelectedValuePath;
+                //    context.Phrases.Attach(dpListExpression.SelectedItem);
+                //    context.Phrases.Remove(x=> w.phrase == expressionToRemove);
+            }
+        }
+
     }
 }
