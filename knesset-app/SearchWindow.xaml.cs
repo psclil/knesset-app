@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace knesset_app
 {
@@ -295,23 +296,23 @@ namespace knesset_app
                 return;
             }
             string firstWord = searchWords[0];
-            //context.Database.Log = Console.WriteLine;
             IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
 
             for (int j = 1; j < searchWords.Count; j++)
             {
+                // for technical reasons we need to save values used in the query expressions as simple variables
+                // and not access them through arrays, etc...
+                // we alsp need to copy values that might change until the query is executed.
                 string temp = searchWords[j];
                 int tempI = j;
-                selecetedExpression = selecetedExpression.Where(x => context.ParagraphWords.Any(i => (
-                i.word == temp
-                && x.c_name == i.c_name
-                && x.pr_number == i.pr_number
-                && x.pg_number == i.pg_number
-                && x.word_number + tempI == i.word_number)));
-
+                selecetedExpression = selecetedExpression.Join(context.ParagraphWords,
+                    x => new { x.c_name, x.pr_number, x.pg_number, word_number = x.word_number + tempI, word = temp },
+                    y => new { y.c_name, y.pr_number, y.pg_number, y.word_number, y.word },
+                    (x, y) => x);
             }
 
-            var results = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList().Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
+            var resultsRaw = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList();
+            var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
             if (results.Count > 0)
             {
