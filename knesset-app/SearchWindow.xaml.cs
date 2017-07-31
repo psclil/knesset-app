@@ -8,7 +8,6 @@ using System.Data.Entity;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
 
 namespace knesset_app
 {
@@ -92,11 +91,25 @@ namespace knesset_app
             cbProtocolTitle.Text = string.Empty;
             cbProtocolCommitte.Text = string.Empty;
             cbProtocolCommitte.SelectedIndex = -1;
-            dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
-
-            PopulateComboboxes();
             cbInvited.Text = null;
             cbPersence.Text = null;
+            dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
+            PopulateComboboxes();
+
+            protocolName.Text = string.Empty;
+            PgOffset.Text = string.Empty;
+            SpkeakerName.Text = string.Empty;
+            PgOffset.Text = null;
+            PgSpeakerNum.Text = null;
+            paragraphNum.Text = null;
+            wordNum.Text = null;
+
+            dpListExpression.Text = string.Empty;
+            dpListExpression.SelectedIndex = -1;
+
+            lsResultsExpression.ItemsSource = string.Empty;
+            lstResults.ItemsSource = string.Empty;
+            lstResultsBackwardSearch.ItemsSource = string.Empty;
         }
 
 
@@ -197,10 +210,15 @@ namespace knesset_app
 
             if (!IsSpeakerTRUE)
             {
+               
+                    if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
+                    {
+                        MessageBox.Show("חובה למלא את כל השדות");
+                        return;
+                    }
                 selectedProcotocolName = protocolName.Text;
                 int selectedParagraphNum = int.Parse(paragraphNum.Text);
                 int selectedWordNum = int.Parse(wordNum.Text);
-
 
                 IQueryable<Protocol> relevantProtocols = context.Protocols;
                 searchedWords = (from p in context.ParagraphWords
@@ -219,6 +237,12 @@ namespace knesset_app
             // serach by speaker
             else
             {
+                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(SpkeakerName.Text) 
+                    || string.IsNullOrWhiteSpace(PgSpeakerNum.Text)|| string.IsNullOrWhiteSpace(PgOffset.Text)) 
+                {
+                    MessageBox.Show("חובה למלא את כל השדות");
+                    return;
+                }
                 string speakerName = string.Empty;
                 selectedProcotocolName = protocolName.Text;
                 speakerName = SpkeakerName.Text;
