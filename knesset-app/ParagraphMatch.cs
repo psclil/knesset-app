@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -17,7 +18,8 @@ namespace knesset_app
         public ParagraphMatch(DBEntities.Paragraph paragraph, ParagraphWord firstWordInMatch, List<string> searchWords)
         {
             InParagraph = paragraph;
-            Span content = new Span();
+            Span content = new Span(new Run(string.Format("{0}: ", paragraph.pn_name)) { FontStyle = FontStyles.Italic });
+            content.Inlines.Add(new Run("... "));
             int firstIncludeWord = firstWordInMatch.word_number - MAX_WORDS_PADDING,
                 lastWordInMatch = firstWordInMatch.word_number + searchWords.Count + MAX_WORDS_PADDING,
                 spaceFillerRead = 0, charsRead = 0;
@@ -76,6 +78,7 @@ namespace knesset_app
             {
                 content.Inlines.Add(new Run(buffer.ToString()));
             }
+            content.Inlines.Add(new Run(" ..."));
             Content = content;
         }
 

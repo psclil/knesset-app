@@ -47,7 +47,7 @@
                     <Run> פרוטוקול </Run>
                     <Run Text="{Binding InParagraph.pr_number}" FontWeight="DemiBold"/>
                     <Run>: </Run>
-                    <Run Text="{Binding InParagraph.protocol.pr_title}"/>
+                    <Run Text="{Binding InParagraph.protocol.pr_title}" TextDecorations="Underline"/>
                 </TextBlock>
                 <TextBlock FontSize="16" TextWrapping="WrapWithOverflow" local:TextBlockExtension.FormattedText="{Binding Path=Content, Mode=OneWay}" />
             </StackPanel>
