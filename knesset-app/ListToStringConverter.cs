@@ -5,6 +5,8 @@ using System.Windows.Data;
 
 namespace knesset_app
 {
+    // a class to convert list<string>, list<presence> or list<invitation> to a command seperated string so we can display
+    // it in a data template without hurting performance by using ItemsControl
     public class ListToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

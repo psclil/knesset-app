@@ -1,16 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using knesset_app.DBEntities;
 
 namespace knesset_app
@@ -27,6 +17,8 @@ namespace knesset_app
 
         private void SaveGroup(object sender, RoutedEventArgs e)
         {
+            // first do validations that do not reqire db access
+
             string grpName = groupNameTxt.Text;
             if (grpName.Length == 0)
             {
@@ -34,9 +26,8 @@ namespace knesset_app
                 groupNameTxt.Focus();
                 return;
             }
-            HashSet<string> items = new HashSet<string>();
-            ParagraphReader reader = new ParagraphReader();
-            reader.Read(wordsListTxt.Text, w => { items.Add(w); }, w => { });
+            ParagraphReader reader = new ParagraphReader(); // use paragraph read to remove all "non-word" chars and split into words
+            HashSet<string> items = new HashSet<string>(reader.ReadWords(wordsListTxt.Text));
             if (items.Count == 0)
             {
                 MessageBox.Show("חובה להזין מילים לקבוצה");
@@ -52,12 +43,16 @@ namespace knesset_app
             {
                 using (KnessetContext context = new KnessetContext())
                 {
+                    // now do validations that do reqire db access
                     WordsGroup existing = context.WordsGroups.Find(grpName);
                     if (existing != null)
                     {
                         MessageBox.Show("כבר קיימת קבוצה עם שם זה");
                         return;
                     }
+
+                    // input is OK, save the new group, if a word is not in the words relation add it
+                    // (we might define groups before loading protocols)
                     WordsGroup group = new WordsGroup { g_name = grpName };
                     context.WordsGroups.Add(group);
 
@@ -71,9 +66,9 @@ namespace knesset_app
                         }
                         context.WordInGroups.Add(new WordInGroup { wordsGroup = group, WordObj = wordObj });
                     }
-                    context.SaveChanges();
+                    context.SaveChanges(); // commit all changes to DB
                 }
-                DialogResult = true;
+                DialogResult = true; // can be used by parent window - marks success
                 Close();
             }
             catch (Exception ex)

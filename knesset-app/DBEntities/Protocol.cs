@@ -22,7 +22,7 @@ namespace knesset_app.DBEntities
         public string pr_title { get; set; }
 
         [ForeignKey("c_name")]
-        public Committee committee { get; set; }
+        public virtual Committee committee { get; set; }
 
         [InverseProperty("protocol")]
         public virtual ICollection<Paragraph> paragraphs { get; set; }

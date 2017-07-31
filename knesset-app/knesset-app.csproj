@@ -84,9 +84,6 @@
       <DependentUpon>PresenceStatisticsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProtocolFileParser.cs" />
-    <Compile Include="SearchComitte.xaml.cs">
-      <DependentUpon>SearchComitte.xaml</DependentUpon>
-    </Compile>
     <Compile Include="SearchWindow.xaml.cs">
       <DependentUpon>SearchWindow.xaml</DependentUpon>
     </Compile>
@@ -144,10 +141,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PresenceStatisticsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SearchComitte.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
@@ -7,6 +6,9 @@ namespace knesset_app
 {
     public static class TextBlockExtension
     {
+        // an extension to allow setting rich text to a textbox (because Text property only supports plain text)
+        // used to display search results
+
         public static Inline GetFormattedText(DependencyObject obj)
         {
             return (Inline)obj.GetValue(FormattedTextProperty);

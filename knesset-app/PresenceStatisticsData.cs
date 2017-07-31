@@ -1,18 +1,21 @@
 ﻿using knesset_app.DBEntities;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System;
 
 namespace knesset_app
 {
     class PresenceStatisticsData : INotifyPropertyChanged
     {
+
+        // a class to fetch and hold all the presence statistics data
+        // it is built to enable easy data binding to and from it.
+
         private List<string> allCommittees;
         public List<string> AllCommittees
         {
-            get => allCommittees; set
+            get => allCommittees;
+            set
             {
                 allCommittees = value;
                 OnPropertyChanged("AllCommittees");
@@ -22,7 +25,8 @@ namespace knesset_app
         private string _c_name;
         public string c_name
         {
-            get => _c_name; set
+            get => _c_name;
+            set
             {
                 _c_name = value;
                 OnPropertyChanged("c_name");
@@ -32,6 +36,8 @@ namespace knesset_app
 
         private void updateResults()
         {
+            // the main logic of this class, calculate presence statistics for the chosed committee
+
             using (KnessetContext context = new KnessetContext())
             {
                 int numProtocols = context.Protocols.Where(p => p.c_name == _c_name).Count();

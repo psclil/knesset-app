@@ -23,7 +23,7 @@ namespace knesset_app.DBEntities
         public string word { get; set; }
 
         [ForeignKey("word")]
-        public Word WordObj { get; set; }
+        public virtual Word WordObj { get; set; }
 
         [ForeignKey("c_name,pr_number,pg_number")]
         public virtual Paragraph paragraph { get; set; }

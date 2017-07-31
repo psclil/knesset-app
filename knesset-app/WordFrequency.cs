@@ -1,13 +1,8 @@
-﻿using knesset_app.DBEntities;
-
-namespace knesset_app
+﻿namespace knesset_app
 {
     class WordFrequency
     {
-        public WordFrequency()
-        {
-
-        }
+        // an object to hold a single row in the word frequency results
 
         public string Word { get; set; }
         public float Frequency { get; set; }

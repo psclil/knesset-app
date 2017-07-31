@@ -37,6 +37,7 @@ namespace knesset_app.DBEntities
         public virtual ICollection<ParagraphWord> words { get; set; }
 
         private string _originalText;
+        // a property to wrap the ReconstractParagraph() method. both to create a cache layer and to allow it to be used in data templates
         public string OriginalText
         {
             get
@@ -48,18 +49,23 @@ namespace knesset_app.DBEntities
 
         public string ReconstractParagraph()
         {
+            // reconstruct the original paragraph text by merging all the words in the correct offset and filling the rest of the chars with pg_space_fillers
             int spaceFillerRead = 0;
+            // use a stringbuilder because it's faster and uses less memory than string concatenation
             StringBuilder ret = new StringBuilder();
             foreach (ParagraphWord pWord in words.OrderBy(w => w.pg_offset))
             {
+                // fill from pg_space_fillers until we reach the correct index for the current word
                 int spaceFillerNeeded = pWord.pg_offset - ret.Length;
                 if (spaceFillerNeeded > 0)
                 {
                     ret.Append(pg_space_fillers.Substring(spaceFillerRead, spaceFillerNeeded));
                     spaceFillerRead += spaceFillerNeeded;
                 }
+                // add the current word
                 ret.Append(pWord.word);
             }
+            // if we've added all the words but need to add some more fillerrs
             if (spaceFillerRead < pg_space_fillers.Length)
             {
                 ret.Append(pg_space_fillers.Substring(spaceFillerRead));

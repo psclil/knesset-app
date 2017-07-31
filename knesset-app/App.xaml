@@ -6,6 +6,7 @@
              StartupUri="MainWindow.xaml">
 
     <Application.Resources>
+        <local:ListToStringConverter x:Key="ListToStringConverter"/>
         <Style x:Key="KnessetWindow" TargetType="Window">
             <Setter Property="FlowDirection" Value="RightToLeft"/>
             <Setter Property="Width" Value="600"/>
@@ -22,8 +23,6 @@
         <Style x:Key="ComboDeleteBtn" TargetType="Button" BasedOn="{StaticResource ComboActionBtn}">
             <Setter Property="Foreground" Value="Red"></Setter>
         </Style>
-        <local:ListToStringConverter x:Key="ListToStringConverter"/>
-
         <Style x:Key="TextBlocklBaseStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="FlowDirection" Value="RightToLeft"/>
             <Setter Property="TextWrapping" Value="Wrap"/>

@@ -16,9 +16,9 @@ namespace knesset_app.DBEntities
         public string pn_name { get; set; }
 
         [ForeignKey("pn_name")]
-        public Person person { get; set; }
+        public virtual Person person { get; set; }
 
         [ForeignKey("c_name,pr_number")]
-        public Protocol protocol { get; set; }
+        public virtual Protocol protocol { get; set; }
     }
 }

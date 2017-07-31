@@ -1,7 +1,5 @@
 ﻿using knesset_app.DBEntities;
 using System.Windows;
-using System.Data.Entity;
-using System;
 using System.Linq;
 
 namespace knesset_app

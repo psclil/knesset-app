@@ -17,6 +17,12 @@ namespace knesset_app
 
         private void InitStatistics(object sender, RoutedEventArgs e)
         {
+            // note to db admins,
+            // there is no reason this should be slow
+            // try setting:
+            // query_cache_limit=20K
+            // query_cache_size=4M
+            // query_cache_type=1
             try
             {
                 var res = new GeneralStatisticsResult();

@@ -13,9 +13,9 @@ namespace knesset_app.DBEntities
         public string word { get; set; }
 
         [ForeignKey("g_name")]
-        public WordsGroup wordsGroup { get; set; }
+        public virtual WordsGroup wordsGroup { get; set; }
 
         [ForeignKey("word")]
-        public Word WordObj { get; set; }
+        public virtual Word WordObj { get; set; }
     }
 }
