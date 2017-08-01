@@ -17,20 +17,20 @@ namespace knesset_app
     public partial class SearchWindow : Window
     {
         int MAX_COMBOXLIST = 1000;
-        Boolean IsSpeakerTRUE = false;
+        Boolean isSpeakerTRUE = false;
         KnessetContext context = new KnessetContext();
 
 
         public SearchWindow()
         {
             InitializeComponent();
-            PopulateCommitteeComboboxe();
-            PopulatePhraseComboboxe();
+            PopulateCommitteeCombobox();
+            PopulatePhraseCombobox();
         }
 
 
 
-        private void PopulateCommitteeComboboxe()
+        private void PopulateCommitteeCombobox()
         {
             cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_COMBOXLIST).ToList();
             cbProtocolCommitte.DisplayMemberPath = "c_name";
@@ -38,22 +38,23 @@ namespace knesset_app
 
         }
 
-        private void PopulatePhraseComboboxe()
+        private void PopulatePhraseCombobox()
         {
-            dpListExpression.ItemsSource = context.Phrases.Take(MAX_COMBOXLIST).ToList();
-            dpListExpression.DisplayMemberPath = "phrase";
-            dpListExpression.SelectedValuePath = "phrase";
+            cbPhraseList.ItemsSource = context.Phrases.Take(MAX_COMBOXLIST).ToList();
+            cbPhraseList.DisplayMemberPath = "phrase";
+            cbPhraseList.SelectedValuePath = "phrase";
         }
 
 
 
 
-
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        // Middel Tab - Search protocols by dates, protocol title, committee, invited and presence names
+        private void CommitteeSearch(object sender, RoutedEventArgs e)
         {
+            noResultsMessage.Visibility = Visibility.Hidden;
             IQueryable<Protocol> relevantProtocols = context.Protocols;
 
-            string protocolTitle = string.IsNullOrEmpty(cbProtocolTitle.Text) ? string.Empty : cbProtocolTitle.Text;
+            string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
             string selectedProcotocolCommitte = string.Empty;
 
             //getting the date fields 
@@ -61,9 +62,9 @@ namespace knesset_app
             DateTime? toDate = dpToDate.SelectedDate;
 
             //commettie field 
-            if (cbProtocolCommitte.SelectedValue != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.SelectedValue.ToString()) == false)
+            if (cbProtocolCommitte.Text != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.Text) == false)
             {
-                selectedProcotocolCommitte = cbProtocolCommitte.SelectedValue.ToString();
+                selectedProcotocolCommitte = cbProtocolCommitte.Text;
             }
 
             if (!string.IsNullOrEmpty(selectedProcotocolCommitte))
@@ -77,12 +78,12 @@ namespace knesset_app
 
 
 
-            //invidted field
+            //Invidted field
             char[] nameListSplit = new char[] { ',' };
 
-            if (!string.IsNullOrWhiteSpace(cbInvited.Text))
+            if (!string.IsNullOrWhiteSpace(tbInvited.Text))
             {
-                string[] split = cbInvited.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
+                string[] split = tbInvited.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
                 {
                     split[i] = split[i].Trim();
@@ -97,9 +98,9 @@ namespace knesset_app
 
 
             //Persences field
-            if (string.IsNullOrWhiteSpace(cbPersence.Text) == false)
+            if (string.IsNullOrWhiteSpace(tbPersence.Text) == false)
             {
-                string[] split = cbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
+                string[] split = tbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < split.Length; i++)
                 {
                     split[i] = split[i].Trim();
@@ -114,7 +115,7 @@ namespace knesset_app
 
 
 
-            // display results
+            // Display results
             List<Protocol> protocols = relevantProtocols.ToList();
 
             if (protocols != null && protocols.Count > 0)
@@ -123,6 +124,8 @@ namespace knesset_app
             }
             else
             {
+                noResultsMessage.Visibility = Visibility.Visible;
+
                 List<Protocol> messages = new List<Protocol>();
                 Protocol message = new Protocol();
                 message.pr_title = "לא נמצאו תוצאות";
@@ -135,15 +138,15 @@ namespace knesset_app
 
 
 
-
-        private void btnSearch_Backwards(object sender, RoutedEventArgs e)
+        // Right Tab - Search a word in protocols by: word's location parameters OR by speaker's parameters
+        private void BackwardsSearch(object sender, RoutedEventArgs e)
         {
             List<ParagraphWord> searchedWords = new List<ParagraphWord>();
             string selectedProcotocolName = string.Empty;
 
-            if (!IsSpeakerTRUE)
+            //Search with word's location parameters
+            if (!isSpeakerTRUE) 
             {
-
                 if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
                 {
                     MessageBox.Show("חובה למלא את כל השדות");
@@ -164,28 +167,26 @@ namespace knesset_app
                                  i.pr_title.Contains(selectedProcotocolName)
                                  select p
                              ).ToList();
-
             }
 
-            // serach by speaker
+            //Search with Speaker parameters
             else
             {
-                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(SpkeakerName.Text)
-                    || string.IsNullOrWhiteSpace(PgSpeakerNum.Text) || string.IsNullOrWhiteSpace(PgOffset.Text))
+                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(speakerName.Text)
+                    || string.IsNullOrWhiteSpace(pgSpeakerNum.Text) || string.IsNullOrWhiteSpace(pgOffset.Text))
                 {
                     MessageBox.Show("חובה למלא את כל השדות");
                     return;
                 }
-                string speakerName = string.Empty;
+                string selectedSpeakerName = string.Empty;
                 selectedProcotocolName = protocolName.Text;
-                speakerName = SpkeakerName.Text;
-                int paragraphSpekerNum = int.Parse(PgSpeakerNum.Text);
-                int paragraphSpekerOffset = int.Parse(PgOffset.Text);
+                selectedSpeakerName = speakerName.Text;
+                int paragraphSpekerNum = int.Parse(pgSpeakerNum.Text);
+                int paragraphSpekerOffset = int.Parse(pgOffset.Text);
 
-
+                // result is a product of 3 different tables - therefore 2 join operations were executed
                 IQueryable<Protocol> relevantProtocols = context.Protocols;
                 IQueryable<Paragraph> relevantParagraphs = context.Paragraphs;
-
                 searchedWords = (from p in context.ParagraphWords
                                  join i in relevantProtocols
                                  on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
@@ -195,7 +196,7 @@ namespace knesset_app
                                  &&
                                  i.pr_title.Contains(selectedProcotocolName)
                                  &&
-                                 r.pn_name.Contains(speakerName)
+                                 r.pn_name.Contains(selectedSpeakerName)
                                  &&
                                  r.pn_pg_number == paragraphSpekerNum
                                  select p
@@ -203,10 +204,10 @@ namespace knesset_app
             }
 
 
-            // display results
+            // Display results
             if (searchedWords.Count > 0)
             {
-                lstResultsBackwardSearch.ItemsSource = searchedWords;
+                lstBackwardSearchResults.ItemsSource = searchedWords;
             }
             else
             {
@@ -215,26 +216,27 @@ namespace knesset_app
                 message.c_name = "לא נמצאו תוצאות";
                 message.word = "";
                 messages.Add(message);
-                lstResultsBackwardSearch.ItemsSource = messages;
+                lstBackwardSearchResults.ItemsSource = messages;
             }
 
         }
 
 
-
-        private void btnSerach_Expression(object sender, RoutedEventArgs e)
+        // Left Tab - search protocols according to word\s
+        private void PhraseSearch(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(dpListExpression.Text))
+            if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
             {
                 MessageBox.Show("חובה להכניס ביטוי לחיפוש");
                 return;
             }
             char[] nameListSplit = new char[] { ' ' };
 
-            string selectedExpression = dpListExpression.Text;
+            string selectedExpression = cbPhraseList.Text;
             ParagraphReader paragraphReader = new ParagraphReader();
             List<string> searchWords = paragraphReader.ReadWords(selectedExpression);
 
+            //limits the numbers of words in the phrase search
             if (searchWords.Count >= 6)
             {
                 MessageBox.Show("יותר מידי מילים בביטוי לחיפוש");
@@ -256,12 +258,13 @@ namespace knesset_app
                     (x, y) => x);
             }
 
+            // save results in 
             var resultsRaw = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList();
             var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
             if (results.Count > 0)
             {
-                lsResultsExpression.ItemsSource = results;
+                lstPhraseSearchResults.ItemsSource = results;
             }
             else
             {
@@ -269,13 +272,13 @@ namespace knesset_app
                 Protocol message = new Protocol();
                 message.pr_title = "לא נמצאו תוצאות";
                 messages.Add(message);
-                lsResultsExpression.ItemsSource = messages;
+                lstPhraseSearchResults.ItemsSource = messages;
             }
         }
 
 
 
-        private void openChosenProtocol(object sender, SelectionChangedEventArgs e)
+        private void OpenChosenProtocol(object sender, SelectionChangedEventArgs e)
         {
             if (lstResults.SelectedIndex == -1) return;
             ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(lstResults.SelectedItem as Protocol);
@@ -284,49 +287,71 @@ namespace knesset_app
         }
 
 
-        private void openChosenProtocolExpression(object sender, SelectionChangedEventArgs e)
+        private void OpenChosenPhraseProtocol(object sender, SelectionChangedEventArgs e)
         {
-            if (lstResults.SelectedIndex == -1) return;
-            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(lstResults.SelectedItem as Protocol);
+            if (lstPhraseSearchResults.SelectedIndex == -1) return;
+            ParagraphMatch selectedResultItem = (ParagraphMatch)lstPhraseSearchResults.SelectedItem;
+            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.InParagraph.protocol as Protocol);
             chosenP.ShowDialog();
-            lstResults.SelectedIndex = -1;
+            lstPhraseSearchResults.SelectedIndex = -1;
+        }
+
+
+        private void OpenChosenWordProtocol(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstBackwardSearchResults.SelectedIndex == -1) return;
+            ParagraphWord selectedResultItem = (ParagraphWord)lstBackwardSearchResults.SelectedItem;
+            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.paragraph.protocol as Protocol);
+            chosenP.ShowDialog();
+            lstBackwardSearchResults.SelectedIndex = -1;
         }
 
 
 
-        private void btnClearFields_Click(object sender, RoutedEventArgs e)
+        // this is draft of general open protocol functions
+        private void OpenChosenProtocolGeneral(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender == null || !(sender is ListBox)) return;
+            ListBox lstResult = sender as ListBox;
+        }
+
+
+
+
+        private void ClearAllSearchFields(object sender, RoutedEventArgs e)
         {
 
             // Committee Tab
-            cbProtocolTitle.Text = string.Empty;
+            tbProtocolTitle.Text = string.Empty;
             cbProtocolCommitte.Text = string.Empty;
-            cbProtocolCommitte.Text = string.Empty;
-            cbInvited.Text = null;
-            cbPersence.Text = null;
+            tbInvited.Text = null;
+            tbPersence.Text = null;
             dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
             lstResults.ItemsSource = string.Empty;
 
             // Backward Tab
             protocolName.Text = string.Empty;
-            PgOffset.Text = string.Empty;
-            SpkeakerName.Text = string.Empty;
-            PgOffset.Text = null;
-            PgSpeakerNum.Text = null;
+            pgOffset.Text = string.Empty;
+            speakerName.Text = string.Empty;
+            pgSpeakerNum.Text = null;
             paragraphNum.Text = null;
             wordNum.Text = null;
-            lstResultsBackwardSearch.ItemsSource = string.Empty;
+            lstBackwardSearchResults.ItemsSource = string.Empty;
 
             // Expression Tab
-            dpListExpression.Text = string.Empty;
-            dpListExpression.SelectedIndex = -1;
-            lsResultsExpression.ItemsSource = string.Empty;
+            cbPhraseList.Text = string.Empty;
+            cbPhraseList.SelectedIndex = -1;
+            lstPhraseSearchResults.ItemsSource = string.Empty;
+
+
+            noResultsMessage.Visibility = Visibility.Hidden;
 
         }
 
 
 
 
-        private void numericTxt_Change(object sender, EventArgs e)
+        private void NumericTxtChange(object sender, EventArgs e)
         {
             if (sender == null || !(sender is TextBox)) return;
             TextBox textBox = sender as TextBox;
@@ -339,47 +364,47 @@ namespace knesset_app
 
 
 
-
-        private void CheckBox_Changes(object sender, RoutedEventArgs e)
+        // show & hide speaker's search fields in Backwards tab according to checkbox status
+        private void CheckBoxStatus(object sender, RoutedEventArgs e)
         {
-            if (checkSpeakerBox.IsChecked == false)
+            if (speakerCheckBox.IsChecked == false)
             {
-                IsSpeakerTRUE = false;
-                SpeakerSearch.Visibility = Visibility.Hidden;
-                WordNumSearch.Visibility = Visibility.Visible;
+                isSpeakerTRUE = false;
+                speakerSearch.Visibility = Visibility.Hidden;
+                wordNumSearch.Visibility = Visibility.Visible;
             }
             else
             {
-                IsSpeakerTRUE = true;
-                WordNumSearch.Visibility = Visibility.Hidden;
-                SpeakerSearch.Visibility = Visibility.Visible;
+                isSpeakerTRUE = true;
+                wordNumSearch.Visibility = Visibility.Hidden;
+                speakerSearch.Visibility = Visibility.Visible;
             }
 
         }
 
 
-
-        private void AddExpreesion(object sender, RoutedEventArgs e)
+        // add Phrase given by user to "Phrase" table in DB
+        private void AddPhrase(object sender, RoutedEventArgs e)
         {
-            string expressionToAdd = string.IsNullOrEmpty(dpListExpression.Text) ? string.Empty : dpListExpression.Text.Trim();
-            if (string.IsNullOrWhiteSpace(expressionToAdd))
+            string phraseToAdd = string.IsNullOrEmpty(cbPhraseList.Text) ? string.Empty : cbPhraseList.Text.Trim();
+            if (string.IsNullOrWhiteSpace(phraseToAdd))
             {
                 MessageBox.Show("ערך לא חוקי");
-                dpListExpression.Text = string.Empty;
+                cbPhraseList.Text = string.Empty;
                 return;
             }
             try
             {
-                Phrase existing = context.Phrases.Find(expressionToAdd);
+                Phrase existing = context.Phrases.Find(phraseToAdd);
                 if (existing != null)
                 {
                     MessageBox.Show("כבר קיים ביטוי כזה");
                     return;
                 }
-                Phrase reader = new Phrase { phrase = expressionToAdd };
+                Phrase reader = new Phrase { phrase = phraseToAdd };
                 context.Phrases.Add(reader);
                 context.SaveChanges();
-                PopulatePhraseComboboxe();
+                PopulatePhraseCombobox();
             }
             catch (Exception ex)
             {
@@ -388,17 +413,17 @@ namespace knesset_app
         }
 
 
-
+        // remove Phrase given by user from "Phrase" table in DB
         private void DeletePhrase(object sender, RoutedEventArgs e)
         {
 
-            string expressionToRemove = dpListExpression.Text;
+            string phraseToRemove = cbPhraseList.Text;
             {
-                Phrase reader = context.Phrases.Find(expressionToRemove);
-                context.Phrases.Remove(reader);
+                Phrase temp = context.Phrases.Find(phraseToRemove);
+                context.Phrases.Remove(temp);
                 context.SaveChanges();
-                dpListExpression.Text = string.Empty;
-                PopulatePhraseComboboxe();
+                cbPhraseList.Text = string.Empty;
+                PopulatePhraseCombobox();
 
             }
         }
@@ -408,7 +433,7 @@ namespace knesset_app
         private Boolean isPhraseExists(string phrase)
         {
             Boolean found = false;
-            foreach (Phrase Item in dpListExpression.Items)
+            foreach (Phrase Item in cbPhraseList.Items)
             {
                 if (Item.phrase == phrase)
                 {
@@ -420,30 +445,29 @@ namespace knesset_app
 
 
 
-        private void dpListExpression_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PhraseSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             onSearch();
-
         }
 
-
-        private void dpListExpression_KeyUp(object sender, KeyEventArgs e)
+        
+        private void PhraseKeyUp(object sender, KeyEventArgs e)
         {
             onSearch();
         }
 
         private void onSearch()
         {
-            string phrase = dpListExpression.Text;
+            string phrase = cbPhraseList.Text;
             if (isPhraseExists(phrase))
             {
-                btnAdd.IsEnabled = false;
-                btnRemove.IsEnabled = true;
+                btnAddPhrase.IsEnabled = false;
+                btnRemovePhrase.IsEnabled = true;
             }
             else
             {
-                btnAdd.IsEnabled = true;
-                btnRemove.IsEnabled = false;
+                btnAddPhrase.IsEnabled = true;
+                btnRemovePhrase.IsEnabled = false;
 
             }
         }
