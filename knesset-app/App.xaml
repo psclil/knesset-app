@@ -36,22 +36,7 @@
         </Style>
         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxlBaseStyle}"/>
 
-        <!--<this is a template for the backwards serach>-->
-        <DataTemplate x:Key="WordDisplay" DataType="db:ParagraphWord">
-            <StackPanel Margin="0 8">
-                <TextBlock TextWrapping="NoWrap" FontSize="18" Text="{Binding word}" />
-                <TextBlock FontSize="16" TextWrapping="NoWrap">
-                    <Run Text="{Binding c_name}" FontWeight="DemiBold"/>
-                    <Run> פרוטוקול </Run>
-                    <Run Text="{Binding pr_number}" FontWeight="DemiBold"/>
-                    <Run>: </Run>
-                    <Run Text="{Binding paragraph.protocol.pr_title}"/>
-                </TextBlock>
-            </StackPanel>
-        </DataTemplate>
-
-
-        <!--<this is a template for the Phrase serach>-->
+        <!--<this is a template for the Phrase serach and Backwards search>-->
         <DataTemplate x:Key="PhraseDisplay" DataType="local:ParagraphMatch">
             <StackPanel Margin="0 8">
                 <TextBlock FontSize="16" TextWrapping="NoWrap">

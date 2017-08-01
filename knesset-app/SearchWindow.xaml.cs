@@ -125,6 +125,7 @@ namespace knesset_app
             else
             {
                 // Display "NO results" message
+                lstResults.ItemsSource = string.Empty;
                 noResultsMessageMetaData.Visibility = Visibility.Visible;
             }
         }
@@ -139,7 +140,7 @@ namespace knesset_app
             //reset\hide "No results" message
             noResultsMessageBackward.Visibility = Visibility.Hidden;
 
-            List<ParagraphWord> searchedWords = new List<ParagraphWord>();
+            IQueryable<ParagraphWord> searchedWords;
             string selectedProcotocolName = string.Empty;
 
             //Search with word's location parameters
@@ -164,7 +165,7 @@ namespace knesset_app
                                  &&
                                  i.pr_title.Contains(selectedProcotocolName)
                                  select p
-                             ).ToList();
+                             );
             }
 
             //Search with Speaker parameters
@@ -198,18 +199,20 @@ namespace knesset_app
                                  &&
                                  r.pn_pg_number == paragraphSpekerNum
                                  select p
-                             ).ToList();
+                             );
             }
 
+            var results = searchedWords.Include("paragraph.words").ToList().Select(w=>new ParagraphMatch(w.paragraph,w,new List<string> { w.word })).ToList();
 
             // Display results
-            if (searchedWords.Count > 0)
+            if (results.Count > 0)
             {
-                lstBackwardSearchResults.ItemsSource = searchedWords;
+                lstBackwardSearchResults.ItemsSource = results;
             }
             else
             {
-                // Display "NO results" message
+                // Display "NO results" message\
+                lstBackwardSearchResults.ItemsSource = string.Empty;
                 noResultsMessageBackward.Visibility = Visibility.Visible;
             }
 
@@ -268,6 +271,7 @@ namespace knesset_app
             else
             {
                 // Display "NO results" message
+                lstPhraseSearchResults.ItemsSource = string.Empty;
                 noResultsMessagePhrase.Visibility = Visibility.Visible;
             }
         }
@@ -356,21 +360,13 @@ namespace knesset_app
 
         private void OpenChosenPhraseProtocol(object sender, SelectionChangedEventArgs e)
         {
-            if (lstPhraseSearchResults.SelectedIndex == -1) return;
-            ParagraphMatch selectedResultItem = (ParagraphMatch)lstPhraseSearchResults.SelectedItem;
+            if (sender == null || !(sender is ListBox)) return;
+            ListBox lst = sender as ListBox;
+            if (lst.SelectedIndex == -1) return;
+            ParagraphMatch selectedResultItem = (ParagraphMatch)lst.SelectedItem;
             ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.InParagraph.protocol as Protocol);
             chosenP.ShowDialog();
-            lstPhraseSearchResults.SelectedIndex = -1;
-        }
-
-
-        private void OpenChosenWordProtocol(object sender, SelectionChangedEventArgs e)
-        {
-            if (lstBackwardSearchResults.SelectedIndex == -1) return;
-            ParagraphWord selectedResultItem = (ParagraphWord)lstBackwardSearchResults.SelectedItem;
-            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.paragraph.protocol as Protocol);
-            chosenP.ShowDialog();
-            lstBackwardSearchResults.SelectedIndex = -1;
+            lst.SelectedIndex = -1;
         }
 
         private void ClearAllSearchFields(object sender, RoutedEventArgs e)
