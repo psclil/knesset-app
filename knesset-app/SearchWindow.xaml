@@ -27,10 +27,10 @@
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="פרוטוקול:" Grid.Column="0" Grid.Row="1"><Run FlowDirection="RightToLeft"/></TextBlock>
+                <TextBlock Text="פרוטוקול:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Width="208"><Run FlowDirection="RightToLeft"/></TextBlock>
                 <TextBox x:Name="protocolName" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" />
                 <CheckBox x:Name="speakerCheckBox" Content="חיפוש לפי דובר" Checked="CheckBoxStatus" Unchecked="CheckBoxStatus" IsChecked="False" 
-                          Grid.Column="0" Grid.Row="2" Margin="0,10,0,10" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                          Grid.Column="0" Grid.Row="2" Margin="0,4" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Width="208" />
 
                 <StackPanel x:Name="wordNumSearch" Grid.ColumnSpan="4" Grid.Row="3" Margin="0,0,0,0" 
                             Visibility="Visible" IsHitTestVisible="True" >
@@ -44,8 +44,8 @@
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="מספר פסקה:" Grid.Column="0" Grid.Row="0"/>
-                        <TextBlock Text="מספר מילה:" Grid.Column="0" Grid.Row="1"/>
+                        <TextBlock Text="מספר פסקה:" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Width="208"/>
+                        <TextBlock Text="מספר מילה:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Width="208"/>
                         <TextBox x:Name="paragraphNum" TextChanged="NumericTxtChange" Grid.Column="1" Grid.Row="0"/>
                         <TextBox x:Name="wordNum" TextChanged="NumericTxtChange" Grid.Column="1" Grid.Row="1" />
                     </Grid>
@@ -62,9 +62,9 @@
                             <RowDefinition Height="50"/>
                             <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="שם הדובר:" Grid.Column="0" Grid.Row="0"/>
-                        <TextBlock Text="מספר פסקה של הדובר:" Grid.Column="0" Grid.Row="1"/>
-                        <TextBlock Text="היסט בפסקה:" Grid.Column="0" Grid.Row="2" />
+                        <TextBlock Text="שם הדובר:" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Width="208"/>
+                        <TextBlock Text="מספר פסקה של הדובר:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Width="208" Margin="0,4"/>
+                        <TextBlock Text="היסט בפסקה:" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Width="208" Margin="0,4" />
                         <TextBox x:Name="speakerName"  Grid.Column="1" Grid.Row="0"/>
                         <TextBox x:Name="pgSpeakerNum" Grid.Column="1" Grid.Row="1" TextChanged="NumericTxtChange"/>
                         <TextBox x:Name="pgOffset" Grid.Column="1" Grid.Row="2" TextChanged="NumericTxtChange"/>
@@ -73,15 +73,16 @@
                 <Button Name="btnBackwardsSearch" Content="חפש" Width="200" Click="BackwardsSearch" Grid.Column="1" Grid.Row="4" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <Button Name ="btnClearSearchBackward" Content="נקה" Width="100"  Grid.Row="4" Grid.Column="2" Click="ClearAllSearchFields" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
                 <ListBox x:Name="lstBackwardSearchResults" SelectionChanged="OpenChosenWordProtocol" Grid.ColumnSpan="4" Grid.Row="5" ItemTemplate="{StaticResource WordDisplay}"/>
+                <TextBlock x:Name="noResultsMessageBackward" Grid.Row="4" Grid.Column="0" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="198" />
             </Grid>
         </TabItem>
 
-        <TabItem x:Name="tabCommittieSearch" Header="נוכחים/מוזמנים/כותרת/וועדה" IsSelected="True" Padding="15" >
+        <TabItem x:Name="tabMetaDataSearch" Header="נוכחים/מוזמנים/כותרת/וועדה" IsSelected="True" Padding="15" >
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FlowDirection="RightToLeft" Margin="8,8,8,8" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="75*"/>
                     <ColumnDefinition Width="200*"/>
-                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="75*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -116,14 +117,14 @@
                 <TextBox x:Name ="tbInvited" Grid.Column="1" Grid.Row="3"/>
                 <TextBox x:Name ="tbPersence" Grid.Column="1" Grid.Row="4"/>
 
-                <Button Name ="btnSearch" Content="חפש" Width="200" Grid.Row="5" Grid.Column="1" Click="CommitteeSearch" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <Button Name ="btnClearFieldsCommittee" Content="נקה" Width="100"  Grid.Row="5" Grid.Column="3" Click="ClearAllSearchFields" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button Name ="btnSearch" Content="חפש" Width="200" Grid.Row="5" Grid.Column="1" Click="MetaDataSearch" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button Name ="btnClearFieldsMetaData" Content="נקה" Width="100"  Grid.Row="5" Grid.Column="3" Click="ClearAllSearchFields" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <ListBox x:Name="lstResults" Grid.ColumnSpan="3" Grid.Row="6" ItemTemplate="{StaticResource ProtocolDisplay}" SelectionChanged="OpenChosenProtocol"/>
-                <TextBlock x:Name="noResultsMessage" Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="2" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBlock x:Name="noResultsMessageMetaData" Grid.Row="5" Grid.Column="0" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="0,0,10,0" HorizontalAlignment="Right" Width="156" VerticalAlignment="Bottom" />
             </Grid>
         </TabItem>
 
-        <TabItem  x:Name="tabPhraseSearch" Header="מילה/ביטוי לשוני" IsSelected="False" Padding="15" >
+        <TabItem  x:Name="tabPhraseSearch" Header="מילה/ביטוי לשוני" IsSelected="False" Padding="15 " >
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FlowDirection="RightToLeft"  Margin="8,8,8,8" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100*"/>
@@ -136,7 +137,7 @@
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="ביטוי/מילה:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Width="194"/>
+                <TextBlock Text="ביטוי/מילה:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Width="184"/>
                 <ComboBox x:Name="cbPhraseList" SelectionChanged="PhraseSelectionChanged" KeyUp="PhraseKeyUp" IsEditable="True" IsTextSearchEnabled="True" Grid.Column="1" Grid.Row="1" Margin="0,4,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 <Button Name ="btnPhraseSearch" Content="חפש" Click="PhraseSearch" Grid.Column="1" Grid.Row="2" Width="200" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <Button Name ="btnClearFieldsPhrase" Content="נקה" Width="100"  Grid.Row="2" Grid.Column="2" Click="ClearAllSearchFields" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
@@ -152,6 +153,9 @@
                     <Button Name='btnRemovePhrase' Content="הסר" IsEnabled="False" Grid.Row="1" Grid.Column="1" Width="75" Click="DeletePhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboDeleteBtn}"/>
                 </Grid>
                 <ListBox Name="lstPhraseSearchResults" ItemTemplate="{StaticResource PhraseDisplay}" Grid.ColumnSpan="4" Grid.Row="3"  Margin="0,4,0,4" SelectionChanged="OpenChosenPhraseProtocol"/>
+                <TextBlock x:Name="noResultsMessagePhrase" Grid.Row="2" Grid.Column="0" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="184" />
+
+
             </Grid>
         </TabItem>
     </TabControl>

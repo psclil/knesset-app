@@ -17,7 +17,6 @@ namespace knesset_app
     public partial class SearchWindow : Window
     {
         int MAX_COMBOXLIST = 1000;
-        Boolean isSpeakerTRUE = false;
         KnessetContext context = new KnessetContext();
 
 
@@ -49,9 +48,10 @@ namespace knesset_app
 
 
         // Middel Tab - Search protocols by dates, protocol title, committee, invited and presence names
-        private void CommitteeSearch(object sender, RoutedEventArgs e)
+        private void MetaDataSearch(object sender, RoutedEventArgs e)
         {
-            noResultsMessage.Visibility = Visibility.Hidden;
+            //reset\hide "No results" message
+            noResultsMessageMetaData.Visibility = Visibility.Hidden;
             IQueryable<Protocol> relevantProtocols = context.Protocols;
 
             string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
@@ -78,7 +78,7 @@ namespace knesset_app
 
 
 
-            //Invidted field
+            //Invited field
             char[] nameListSplit = new char[] { ',' };
 
             if (!string.IsNullOrWhiteSpace(tbInvited.Text))
@@ -124,13 +124,8 @@ namespace knesset_app
             }
             else
             {
-                noResultsMessage.Visibility = Visibility.Visible;
-
-                List<Protocol> messages = new List<Protocol>();
-                Protocol message = new Protocol();
-                message.pr_title = "לא נמצאו תוצאות";
-                messages.Add(message);
-                lstResults.ItemsSource = messages;
+                // Display "NO results" message
+                noResultsMessageMetaData.Visibility = Visibility.Visible;
             }
         }
 
@@ -141,11 +136,14 @@ namespace knesset_app
         // Right Tab - Search a word in protocols by: word's location parameters OR by speaker's parameters
         private void BackwardsSearch(object sender, RoutedEventArgs e)
         {
+            //reset\hide "No results" message
+            noResultsMessageBackward.Visibility = Visibility.Hidden;
+
             List<ParagraphWord> searchedWords = new List<ParagraphWord>();
             string selectedProcotocolName = string.Empty;
 
             //Search with word's location parameters
-            if (!isSpeakerTRUE) 
+            if (!speakerCheckBox.IsChecked.GetValueOrDefault())
             {
                 if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
                 {
@@ -211,12 +209,8 @@ namespace knesset_app
             }
             else
             {
-                List<ParagraphWord> messages = new List<ParagraphWord>();
-                ParagraphWord message = new ParagraphWord();
-                message.c_name = "לא נמצאו תוצאות";
-                message.word = "";
-                messages.Add(message);
-                lstBackwardSearchResults.ItemsSource = messages;
+                // Display "NO results" message
+                noResultsMessageBackward.Visibility = Visibility.Visible;
             }
 
         }
@@ -225,6 +219,9 @@ namespace knesset_app
         // Left Tab - search protocols according to word\s
         private void PhraseSearch(object sender, RoutedEventArgs e)
         {
+            //reset\hide "No results" message
+            noResultsMessagePhrase.Visibility = Visibility.Hidden;
+
             if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
             {
                 MessageBox.Show("חובה להכניס ביטוי לחיפוש");
@@ -258,25 +255,95 @@ namespace knesset_app
                     (x, y) => x);
             }
 
-            // save results in 
+            // fetch results
             var resultsRaw = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList();
+            // highlight search phrase and create a result snippet for each result
             var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
             if (results.Count > 0)
             {
+                // display results
                 lstPhraseSearchResults.ItemsSource = results;
             }
             else
             {
-                List<Protocol> messages = new List<Protocol>();
-                Protocol message = new Protocol();
-                message.pr_title = "לא נמצאו תוצאות";
-                messages.Add(message);
-                lstPhraseSearchResults.ItemsSource = messages;
+                // Display "NO results" message
+                noResultsMessagePhrase.Visibility = Visibility.Visible;
             }
         }
 
 
+        // add Phrase given by user to "Phrase" table in DB
+        private void AddPhrase(object sender, RoutedEventArgs e)
+        {
+            string phraseToAdd = string.IsNullOrEmpty(cbPhraseList.Text) ? string.Empty : cbPhraseList.Text.Trim();
+            if (string.IsNullOrWhiteSpace(phraseToAdd))
+            {
+                MessageBox.Show("ערך לא חוקי");
+                cbPhraseList.Text = string.Empty;
+                return;
+            }
+            try
+            {
+                Phrase existing = context.Phrases.Find(phraseToAdd);
+                if (existing != null)
+                {
+                    MessageBox.Show("כבר קיים ביטוי כזה");
+                    return;
+                }
+                Phrase phrase = new Phrase { phrase = phraseToAdd };
+                context.Phrases.Add(phrase);
+                context.SaveChanges();
+                PopulatePhraseCombobox();
+                cbPhraseList.SelectedItem = phrase; // update selection to the new object
+                PhraseSelectionChanged(); // update add/delete buttons
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+        // remove Phrase given by user from "Phrase" table in DB
+        private void DeletePhrase(object sender, RoutedEventArgs e)
+        {
+            if (cbPhraseList.SelectedIndex == -1) return;
+            Phrase toRemove = (Phrase)cbPhraseList.SelectedItem;
+            context.Phrases.Remove(toRemove);
+            context.SaveChanges();
+            cbPhraseList.SelectedIndex = -1;
+            PopulatePhraseCombobox();
+
+        }
+
+        #region ui-only-code
+
+        private void PhraseSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PhraseSelectionChanged();
+        }
+
+
+        private void PhraseKeyUp(object sender, KeyEventArgs e)
+        {
+            PhraseSelectionChanged();
+        }
+
+        private void PhraseSelectionChanged()
+        {
+            object selectedItem = cbPhraseList.SelectedItem;
+            if (selectedItem == null)
+            {
+                btnAddPhrase.IsEnabled = cbPhraseList.Text.Length > 0;
+                btnRemovePhrase.IsEnabled = false;
+            }
+            else
+            {
+                btnAddPhrase.IsEnabled = false;
+                btnRemovePhrase.IsEnabled = true;
+            }
+        }
 
         private void OpenChosenProtocol(object sender, SelectionChangedEventArgs e)
         {
@@ -306,22 +373,10 @@ namespace knesset_app
             lstBackwardSearchResults.SelectedIndex = -1;
         }
 
-
-
-        // this is draft of general open protocol functions
-        private void OpenChosenProtocolGeneral(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender == null || !(sender is ListBox)) return;
-            ListBox lstResult = sender as ListBox;
-        }
-
-
-
-
         private void ClearAllSearchFields(object sender, RoutedEventArgs e)
         {
 
-            // Committee Tab
+            // MetaData Tab
             tbProtocolTitle.Text = string.Empty;
             cbProtocolCommitte.Text = string.Empty;
             tbInvited.Text = null;
@@ -344,7 +399,9 @@ namespace knesset_app
             lstPhraseSearchResults.ItemsSource = string.Empty;
 
 
-            noResultsMessage.Visibility = Visibility.Hidden;
+            noResultsMessageMetaData.Visibility = Visibility.Hidden;
+            noResultsMessagePhrase.Visibility = Visibility.Hidden;
+            noResultsMessageBackward.Visibility = Visibility.Hidden;
 
         }
 
@@ -369,108 +426,18 @@ namespace knesset_app
         {
             if (speakerCheckBox.IsChecked == false)
             {
-                isSpeakerTRUE = false;
                 speakerSearch.Visibility = Visibility.Hidden;
                 wordNumSearch.Visibility = Visibility.Visible;
             }
             else
             {
-                isSpeakerTRUE = true;
                 wordNumSearch.Visibility = Visibility.Hidden;
                 speakerSearch.Visibility = Visibility.Visible;
             }
 
         }
 
-
-        // add Phrase given by user to "Phrase" table in DB
-        private void AddPhrase(object sender, RoutedEventArgs e)
-        {
-            string phraseToAdd = string.IsNullOrEmpty(cbPhraseList.Text) ? string.Empty : cbPhraseList.Text.Trim();
-            if (string.IsNullOrWhiteSpace(phraseToAdd))
-            {
-                MessageBox.Show("ערך לא חוקי");
-                cbPhraseList.Text = string.Empty;
-                return;
-            }
-            try
-            {
-                Phrase existing = context.Phrases.Find(phraseToAdd);
-                if (existing != null)
-                {
-                    MessageBox.Show("כבר קיים ביטוי כזה");
-                    return;
-                }
-                Phrase reader = new Phrase { phrase = phraseToAdd };
-                context.Phrases.Add(reader);
-                context.SaveChanges();
-                PopulatePhraseCombobox();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-        }
-
-
-        // remove Phrase given by user from "Phrase" table in DB
-        private void DeletePhrase(object sender, RoutedEventArgs e)
-        {
-
-            string phraseToRemove = cbPhraseList.Text;
-            {
-                Phrase temp = context.Phrases.Find(phraseToRemove);
-                context.Phrases.Remove(temp);
-                context.SaveChanges();
-                cbPhraseList.Text = string.Empty;
-                PopulatePhraseCombobox();
-
-            }
-        }
-
-
-
-        private Boolean isPhraseExists(string phrase)
-        {
-            Boolean found = false;
-            foreach (Phrase Item in cbPhraseList.Items)
-            {
-                if (Item.phrase == phrase)
-                {
-                    return found = true;
-                }
-            }
-            return found;
-        }
-
-
-
-        private void PhraseSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            onSearch();
-        }
-
-        
-        private void PhraseKeyUp(object sender, KeyEventArgs e)
-        {
-            onSearch();
-        }
-
-        private void onSearch()
-        {
-            string phrase = cbPhraseList.Text;
-            if (isPhraseExists(phrase))
-            {
-                btnAddPhrase.IsEnabled = false;
-                btnRemovePhrase.IsEnabled = true;
-            }
-            else
-            {
-                btnAddPhrase.IsEnabled = true;
-                btnRemovePhrase.IsEnabled = false;
-
-            }
-        }
+        #endregion
 
     }
 }
