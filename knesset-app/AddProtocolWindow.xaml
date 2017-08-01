@@ -32,10 +32,10 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="120"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="8"/>
         </Grid.RowDefinitions>
-        <Button Content="שמירה" HorizontalAlignment="Right" Margin="0" Grid.Row="6" Width="75" Click="SaveProtocol" Grid.Column="1" AutomationProperties.AccessKey="S" IsDefault="True"/>
+        <Button Content="שמירה" HorizontalAlignment="Right" Margin="0" Grid.Row="6" Padding="10,0" Click="SaveProtocol" Grid.Column="1" AutomationProperties.AccessKey="S" IsDefault="True"/>
         <Label Content="ועדה" Grid.Row="1"/>
         <Label Content="תאריך" Grid.Row="2"/>
         <Label Content="מס. פרוטוקול" Grid.Row="3"/>

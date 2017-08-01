@@ -11,7 +11,7 @@
     </Window.DataContext>
     <Grid Margin="8">
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="45"/>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
