@@ -22,9 +22,17 @@ namespace knesset_app
 
         public SearchWindow()
         {
-            InitializeComponent();
-            PopulateCommitteeCombobox();
-            PopulatePhraseCombobox();
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
+                InitializeComponent();
+                PopulateCommitteeCombobox();
+                PopulatePhraseCombobox();
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
         }
 
 
@@ -54,6 +62,9 @@ namespace knesset_app
             noResultsMessageMetaData.Visibility = Visibility.Hidden;
             IQueryable<Protocol> relevantProtocols = context.Protocols;
 
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
             string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
             string selectedProcotocolCommitte = string.Empty;
 
@@ -61,72 +72,78 @@ namespace knesset_app
             DateTime? fromDate = dpFromDate.SelectedDate;
             DateTime? toDate = dpToDate.SelectedDate;
 
-            //commettie field 
-            if (cbProtocolCommitte.Text != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.Text) == false)
-            {
-                selectedProcotocolCommitte = cbProtocolCommitte.Text;
-            }
-
-            if (!string.IsNullOrEmpty(selectedProcotocolCommitte))
-                relevantProtocols = relevantProtocols.Where(x => x.c_name == selectedProcotocolCommitte);
-            if (!string.IsNullOrEmpty(protocolTitle))
-                relevantProtocols = relevantProtocols.Where(x => x.pr_title.Contains(protocolTitle));
-            if (fromDate.HasValue)
-                relevantProtocols = relevantProtocols.Where(x => x.pr_date >= fromDate);
-            if (toDate.HasValue)
-                relevantProtocols = relevantProtocols.Where(x => x.pr_date <= toDate);
-
-
-
-            //Invited field - performing an AND relation between given invited list
-            char[] nameListSplit = new char[] { ',' };
-
-            if (!string.IsNullOrWhiteSpace(tbInvited.Text))
-            {
-                string[] split = tbInvited.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < split.Length; i++)
+           
+                //commettie field 
+                if (cbProtocolCommitte.Text != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.Text) == false)
                 {
-                    split[i] = split[i].Trim();
+                    selectedProcotocolCommitte = cbProtocolCommitte.Text;
                 }
 
-                foreach (string temps in split)
+                if (!string.IsNullOrEmpty(selectedProcotocolCommitte))
+                    relevantProtocols = relevantProtocols.Where(x => x.c_name == selectedProcotocolCommitte);
+                if (!string.IsNullOrEmpty(protocolTitle))
+                    relevantProtocols = relevantProtocols.Where(x => x.pr_title.Contains(protocolTitle));
+                if (fromDate.HasValue)
+                    relevantProtocols = relevantProtocols.Where(x => x.pr_date >= fromDate);
+                if (toDate.HasValue)
+                    relevantProtocols = relevantProtocols.Where(x => x.pr_date <= toDate);
+
+
+
+                //Invited field - performing an AND relation between given invited list
+                char[] nameListSplit = new char[] { ',' };
+
+                if (!string.IsNullOrWhiteSpace(tbInvited.Text))
                 {
-                    relevantProtocols = relevantProtocols.Where(x => x.invitations.Any(i => i.pn_name == temps));
+                    string[] split = tbInvited.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
+                    for (int i = 0; i < split.Length; i++)
+                    {
+                        split[i] = split[i].Trim();
+                    }
+
+                    foreach (string temps in split)
+                    {
+                        relevantProtocols = relevantProtocols.Where(x => x.invitations.Any(i => i.pn_name == temps));
+                    }
+                }
+
+
+
+                //Presences field - performing an AND relation between given presences list
+                if (string.IsNullOrWhiteSpace(tbPersence.Text) == false)
+                {
+                    string[] split = tbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
+                    for (int i = 0; i < split.Length; i++)
+                    {
+                        split[i] = split[i].Trim();
+                    }
+
+                    foreach (string temps in split)
+                    {
+                        relevantProtocols = relevantProtocols.Where(x => x.persence.Any(i => i.pn_name == temps));
+                    }
+                }
+
+
+
+
+                // Display results
+                List<Protocol> protocols = relevantProtocols.ToList();
+
+                if (protocols != null && protocols.Count > 0)
+                {
+                    lstResults.ItemsSource = protocols;
+                }
+                else
+                {
+                    // Display "NO results" message
+                    lstResults.ItemsSource = string.Empty;
+                    noResultsMessageMetaData.Visibility = Visibility.Visible;
                 }
             }
-
-
-
-            //Presences field - performing an AND relation between given presences list
-            if (string.IsNullOrWhiteSpace(tbPersence.Text) == false)
+            finally
             {
-                string[] split = tbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < split.Length; i++)
-                {
-                    split[i] = split[i].Trim();
-                }
-
-                foreach (string temps in split)
-                {
-                    relevantProtocols = relevantProtocols.Where(x => x.persence.Any(i => i.pn_name == temps));
-                }
-            }
-
-
-
-
-            // Display results
-            List<Protocol> protocols = relevantProtocols.ToList();
-
-            if (protocols != null && protocols.Count > 0)
-            {
-                lstResults.ItemsSource = protocols;
-            }
-            else
-            {
-                // Display "NO results" message
-                lstResults.ItemsSource = string.Empty;
-                noResultsMessageMetaData.Visibility = Visibility.Visible;
+                Mouse.OverrideCursor = null;
             }
         }
 
@@ -143,77 +160,88 @@ namespace knesset_app
             IQueryable<ParagraphWord> searchedWords;
             string selectedProcotocolName = string.Empty;
 
-            //Search with word's location parameters
-            if (!speakerCheckBox.IsChecked.GetValueOrDefault())
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
             {
-                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
+                //Search with word's location parameters
+                if (!speakerCheckBox.IsChecked.GetValueOrDefault())
                 {
-                    MessageBox.Show("חובה למלא את כל השדות");
-                    return;
+                    if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(paragraphNum.Text) || string.IsNullOrWhiteSpace(wordNum.Text))
+                    {
+                        MessageBox.Show("חובה למלא את כל השדות");
+                        return;
+                    }
+
+                    selectedProcotocolName = protocolName.Text;
+                    int selectedParagraphNum = int.Parse(paragraphNum.Text);
+                    int selectedWordNum = int.Parse(wordNum.Text);
+
+                    IQueryable<Protocol> relevantProtocols = context.Protocols;
+                    searchedWords = (from p in context.ParagraphWords
+                                     join i in relevantProtocols
+                                     on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
+                                     where p.pg_number == selectedParagraphNum
+                                     &&
+                                     p.word_number == selectedWordNum
+                                     &&
+                                     i.pr_title.Contains(selectedProcotocolName)
+                                     select p
+                                 );
+
                 }
-                selectedProcotocolName = protocolName.Text;
-                int selectedParagraphNum = int.Parse(paragraphNum.Text);
-                int selectedWordNum = int.Parse(wordNum.Text);
 
-                IQueryable<Protocol> relevantProtocols = context.Protocols;
-                searchedWords = (from p in context.ParagraphWords
-                                 join i in relevantProtocols
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 where p.pg_number == selectedParagraphNum
-                                 &&
-                                 p.word_number == selectedWordNum
-                                 &&
-                                 i.pr_title.Contains(selectedProcotocolName)
-                                 select p
-                             );
-            }
-
-            //Search with Speaker parameters
-            else
-            {
-                if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(speakerName.Text)
-                    || string.IsNullOrWhiteSpace(pgSpeakerNum.Text) || string.IsNullOrWhiteSpace(pgOffset.Text))
+                //Search with Speaker parameters
+                else
                 {
-                    MessageBox.Show("חובה למלא את כל השדות");
-                    return;
+                    if (string.IsNullOrWhiteSpace(protocolName.Text) || string.IsNullOrWhiteSpace(speakerName.Text)
+                        || string.IsNullOrWhiteSpace(pgSpeakerNum.Text) || string.IsNullOrWhiteSpace(pgOffset.Text))
+                    {
+                        MessageBox.Show("חובה למלא את כל השדות");
+                        return;
+                    }
+                    string selectedSpeakerName = string.Empty;
+                    selectedProcotocolName = protocolName.Text;
+                    selectedSpeakerName = speakerName.Text;
+                    int paragraphSpekerNum = int.Parse(pgSpeakerNum.Text);
+                    int paragraphSpekerOffset = int.Parse(pgOffset.Text);
+
+                    // result is a product of 3 different tables - therefore 2 join operations were executed
+                    IQueryable<Protocol> relevantProtocols = context.Protocols;
+                    IQueryable<Paragraph> relevantParagraphs = context.Paragraphs;
+                    searchedWords = (from p in context.ParagraphWords
+                                     join i in relevantProtocols
+                                     on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
+                                     join r in relevantParagraphs
+                                     on new { p.c_name, p.pr_number, p.pg_number } equals new { r.c_name, r.pr_number, r.pg_number }
+                                     where p.pg_offset == paragraphSpekerOffset
+                                     &&
+                                     i.pr_title.Contains(selectedProcotocolName)
+                                     &&
+                                     r.pn_name.Contains(selectedSpeakerName)
+                                     &&
+                                     r.pn_pg_number == paragraphSpekerNum
+                                     select p
+                                 );
                 }
-                string selectedSpeakerName = string.Empty;
-                selectedProcotocolName = protocolName.Text;
-                selectedSpeakerName = speakerName.Text;
-                int paragraphSpekerNum = int.Parse(pgSpeakerNum.Text);
-                int paragraphSpekerOffset = int.Parse(pgOffset.Text);
 
-                // result is a product of 3 different tables - therefore 2 join operations were executed
-                IQueryable<Protocol> relevantProtocols = context.Protocols;
-                IQueryable<Paragraph> relevantParagraphs = context.Paragraphs;
-                searchedWords = (from p in context.ParagraphWords
-                                 join i in relevantProtocols
-                                 on new { p.c_name, p.pr_number } equals new { i.c_name, i.pr_number }
-                                 join r in relevantParagraphs
-                                 on new { p.c_name, p.pr_number, p.pg_number } equals new { r.c_name, r.pr_number, r.pg_number }
-                                 where p.pg_offset == paragraphSpekerOffset
-                                 &&
-                                 i.pr_title.Contains(selectedProcotocolName)
-                                 &&
-                                 r.pn_name.Contains(selectedSpeakerName)
-                                 &&
-                                 r.pn_pg_number == paragraphSpekerNum
-                                 select p
-                             );
+                var results = searchedWords.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList().Select(w => new ParagraphMatch(w.paragraph, w, new List<string> { w.word })).ToList();
+
+                // Display results
+                if (results.Count > 0)
+                {
+                    lstBackwardSearchResults.ItemsSource = results;
+                }
+                else
+                {
+                    // Display "NO results" message\
+                    lstBackwardSearchResults.ItemsSource = string.Empty;
+                    noResultsMessageBackward.Visibility = Visibility.Visible;
+                }
+
             }
-
-            var results = searchedWords.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList().Select(w=>new ParagraphMatch(w.paragraph,w,new List<string> { w.word })).ToList();
-
-            // Display results
-            if (results.Count > 0)
+            finally
             {
-                lstBackwardSearchResults.ItemsSource = results;
-            }
-            else
-            {
-                // Display "NO results" message\
-                lstBackwardSearchResults.ItemsSource = string.Empty;
-                noResultsMessageBackward.Visibility = Visibility.Visible;
+                Mouse.OverrideCursor = null;
             }
 
         }
@@ -225,7 +253,10 @@ namespace knesset_app
             //reset\hide "No results" message
             noResultsMessagePhrase.Visibility = Visibility.Hidden;
 
-            if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
             {
                 MessageBox.Show("חובה להכניס ביטוי לחיפוש");
                 return;
@@ -242,38 +273,49 @@ namespace knesset_app
                 MessageBox.Show("יותר מידי מילים בביטוי לחיפוש");
                 return;
             }
-            string firstWord = searchWords[0];
-            IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
 
-            for (int j = 1; j < searchWords.Count; j++)
+           
+                string firstWord = searchWords[0];
+                IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
+
+                for (int j = 1; j < searchWords.Count; j++)
+                {
+                    // for technical reasons we need to save values used in the query expressions as simple variables
+                    // and not access them through arrays, etc...
+                    // we alsp need to copy values that might change until the query is executed.
+                    string temp = searchWords[j];
+                    int tempI = j;
+                    selecetedExpression = selecetedExpression.Join(context.ParagraphWords,
+                        x => new { x.c_name, x.pr_number, x.pg_number, word_number = x.word_number + tempI, word = temp },
+                        y => new { y.c_name, y.pr_number, y.pg_number, y.word_number, y.word },
+                        (x, y) => x);
+                }
+
+                // fetch results
+                var resultsRaw = selecetedExpression.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList();
+                // highlight search phrase and create a result snippet for each result
+                var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
+
+                if (results.Count > 0)
+                {
+                    // display results
+                    lstPhraseSearchResults.ItemsSource = results;
+                }
+                else
+                {
+                    // Display "NO results" message
+                    lstPhraseSearchResults.ItemsSource = string.Empty;
+                    noResultsMessagePhrase.Visibility = Visibility.Visible;
+                }
+
+            }
+            finally
             {
-                // for technical reasons we need to save values used in the query expressions as simple variables
-                // and not access them through arrays, etc...
-                // we alsp need to copy values that might change until the query is executed.
-                string temp = searchWords[j];
-                int tempI = j;
-                selecetedExpression = selecetedExpression.Join(context.ParagraphWords,
-                    x => new { x.c_name, x.pr_number, x.pg_number, word_number = x.word_number + tempI, word = temp },
-                    y => new { y.c_name, y.pr_number, y.pg_number, y.word_number, y.word },
-                    (x, y) => x);
+                Mouse.OverrideCursor = null;
             }
 
-            // fetch results
-            var resultsRaw = selecetedExpression.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList();
-            // highlight search phrase and create a result snippet for each result
-            var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
-            if (results.Count > 0)
-            {
-                // display results
-                lstPhraseSearchResults.ItemsSource = results;
-            }
-            else
-            {
-                // Display "NO results" message
-                lstPhraseSearchResults.ItemsSource = string.Empty;
-                noResultsMessagePhrase.Visibility = Visibility.Visible;
-            }
+
         }
 
 
@@ -374,7 +416,7 @@ namespace knesset_app
         }
 
 
- 
+
         private void ClearAllSearchFields(object sender, RoutedEventArgs e)
         {
             // MetaData Tab

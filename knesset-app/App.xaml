@@ -96,7 +96,7 @@
         <DataTemplate x:Key="ParagraphDisplay" DataType="db:Paragraph">
             <TextBlock TextWrapping="WrapWithOverflow" Padding="8 4 8 4">
                 <Run FontSize="10" Text="{Binding pg_number, StringFormat='{}[{0}] '}" />
-                <Run FontStyle="Italic" Text="{Binding pn_name,StringFormat='{}{0}: ', Mode=OneTime}"/>
+                <Run FontStyle="Italic" FontWeight="DemiBold" Text="{Binding pn_name,StringFormat='{}{0}: ', Mode=OneTime}"/>
                 <Run Text="{Binding OriginalText,Mode=OneTime}"/>
             </TextBlock>
         </DataTemplate>
