@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:knesset_app"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="שכיחויות מילים" Style="{StaticResource KnessetWindow}">
+        Title="שכיחויות מילים" Style="{StaticResource KnessetWindow}" Loaded="Window_Loaded">
     <Window.DataContext>
-        <local:WordFrequenciesData/>
+        <local:WordFrequenciesData ChangeMouse="True"/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
@@ -24,7 +24,13 @@
         </Grid.ColumnDefinitions>
         <ComboBox Grid.Row="2" SelectedItem="{Binding c_name,Mode=TwoWay}" ItemsSource="{Binding AllCommittees}" IsTextSearchEnabled="True" IsEditable="True" />
         <Label Grid.Row="1">סינון ועדה:</Label>
-        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllSpeakers}" SelectedItem="{Binding pn_name,Mode=TwoWay}" IsTextSearchEnabled="True" IsEditable="True"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllSpeakers}" SelectedItem="{Binding pn_name,Mode=TwoWay}" IsTextSearchEnabled="True" IsEditable="True">
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+        </ComboBox>
         <Label Grid.Row="1" Grid.Column="1">סינון דובר:</Label>
         <DataGrid Grid.Row="3" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding Results}">
             <DataGrid.Columns>

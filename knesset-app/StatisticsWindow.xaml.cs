@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace knesset_app
 {
@@ -25,6 +26,8 @@ namespace knesset_app
             // query_cache_type=1
             try
             {
+                Mouse.OverrideCursor = Cursors.Wait;
+
                 var res = new GeneralStatisticsResult();
                 using (var context = new KnessetContext())
                 {
@@ -56,7 +59,12 @@ namespace knesset_app
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+                Mouse.OverrideCursor = null;
                 Close();
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
             }
         }
 

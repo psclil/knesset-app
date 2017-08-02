@@ -6,6 +6,7 @@ using System.Windows;
 using knesset_app.DBEntities;
 using Microsoft.Win32;
 using System.IO;
+using System.Windows.Input;
 
 namespace knesset_app
 {
@@ -25,12 +26,18 @@ namespace knesset_app
         {
             try
             {
+                Mouse.OverrideCursor = Cursors.Wait;
+
                 UIData = new CreateIndexData();
                 DataContext = UIData;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
             }
         }
 
@@ -44,17 +51,28 @@ namespace knesset_app
 
         private void DeleteGroup(object sender, RoutedEventArgs e)
         {
-            if (GroupsBox.SelectedItems.Count == 0) return;
-            using (KnessetContext context = new KnessetContext())
+            try
             {
-                foreach (var wg in GroupsBox.SelectedItems.OfType<WordsGroup>())
+                if (GroupsBox.SelectedItems.Count == 0) return;
+                using (KnessetContext context = new KnessetContext())
                 {
-                    context.WordsGroups.Attach(wg);
-                    context.WordsGroups.Remove(wg);
+                    foreach (var wg in GroupsBox.SelectedItems.OfType<WordsGroup>())
+                    {
+                        context.WordsGroups.Attach(wg);
+                        context.WordsGroups.Remove(wg);
+                    }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
+                UIData.UpdateData(false, true);
             }
-            UIData.UpdateData(false, true);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
         }
 
         private void CreateIndex(object sender, RoutedEventArgs e)
@@ -71,6 +89,8 @@ namespace knesset_app
             {
                 try
                 {
+                    Mouse.OverrideCursor = Cursors.Wait;
+
                     using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.Unicode)) // create a write stream to the file
                     {
                         using (KnessetContext context = new KnessetContext()) // create a db connection
@@ -113,6 +133,10 @@ namespace knesset_app
                 {
                     MessageBox.Show(ex.ToString());
                     return;
+                }
+                finally
+                {
+                    Mouse.OverrideCursor = null;
                 }
                 // display a success message to the user
                 MessageBox.Show(sfd.FileName, "האינדקס נשמר", MessageBoxButton.OK, MessageBoxImage.Information);

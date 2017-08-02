@@ -1,4 +1,5 @@
 ﻿using knesset_app.DBEntities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,13 +10,19 @@ namespace knesset_app
     {
         public WordFrequenciesData()
         {
-            using (KnessetContext context = new KnessetContext())
+            try
             {
-                var emptyStringList = new string[] { string.Empty };
-                AllCommittees = emptyStringList.Union(context.Committees.Select(x => x.c_name).OrderBy(x => x)).ToList();
-                AllSpeakers = emptyStringList.Union(context.Paragraphs.Select(x => x.pn_name).Distinct().OrderBy(x => x)).ToList();
+                using (KnessetContext context = new KnessetContext())
+                {
+                    var emptyStringList = new string[] { string.Empty };
+                    AllCommittees = emptyStringList.Union(context.Committees.Select(x => x.c_name).OrderBy(x => x)).ToList();
+                    AllSpeakers = emptyStringList.Union(context.Paragraphs.Select(x => x.pn_name).Distinct().OrderBy(x => x)).ToList();
+                }
             }
-            UpdateResults();
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
         }
 
         private string _c_name;
@@ -24,9 +31,12 @@ namespace knesset_app
             get => _c_name;
             set
             {
-                _c_name = value;
-                OnPropertyChanged("c_name");
-                UpdateResults();
+                if (_c_name != value)
+                {
+                    _c_name = value;
+                    OnPropertyChanged("c_name");
+                    UpdateResults();
+                }
             }
         }
 
@@ -36,9 +46,12 @@ namespace knesset_app
             get => _pn_name;
             set
             {
-                _pn_name = value;
-                OnPropertyChanged("pn_name");
-                UpdateResults();
+                if (_pn_name != value)
+                {
+                    _pn_name = value;
+                    OnPropertyChanged("pn_name");
+                    UpdateResults();
+                }
             }
         }
 
@@ -73,23 +86,37 @@ namespace knesset_app
             }
         }
 
-        private void UpdateResults()
+        public void UpdateResults()
         {
-            using (KnessetContext context = new KnessetContext())
+            try
             {
-                IQueryable<ParagraphWord> data = context.ParagraphWords;
-                if (!string.IsNullOrEmpty(_c_name))
-                    data = data.Where(x => x.c_name == _c_name);
-                if (!string.IsNullOrEmpty(_pn_name))
-                    data = data.Where(x => x.paragraph.pn_name == _pn_name);
-                int total = data.Count();
-                Results = new BindingList<WordFrequency>(data
-                    .GroupBy(x => x.word)
-                    .Select(x => new WordFrequency { Word = x.Key, Absolute = x.Count(), Frequency = (float)x.Count() / total })
-                    .ToList()
-                    .OrderByDescending(x => x.Absolute)
-                    .Take(10000)
-                    .ToList());
+                if (ChangeMouse)
+                    System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                using (KnessetContext context = new KnessetContext())
+                {
+                    IQueryable<ParagraphWord> data = context.ParagraphWords;
+                    if (!string.IsNullOrEmpty(_c_name))
+                        data = data.Where(x => x.c_name == _c_name);
+                    if (!string.IsNullOrEmpty(_pn_name))
+                        data = data.Where(x => x.paragraph.pn_name == _pn_name);
+                    int total = data.Count();
+                    Results = new BindingList<WordFrequency>(data
+                        .GroupBy(x => x.word)
+                        .Select(x => new WordFrequency { Word = x.Key, Absolute = x.Count(), Frequency = (float)x.Count() / total })
+                        .ToList()
+                        .OrderByDescending(x => x.Absolute)
+                        .Take(10000)
+                        .ToList());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
+            finally
+            {
+                if (ChangeMouse)
+                    System.Windows.Input.Mouse.OverrideCursor = null;
             }
         }
 
@@ -99,5 +126,7 @@ namespace knesset_app
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        public bool ChangeMouse { get; set; }
     }
 }
