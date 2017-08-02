@@ -78,7 +78,7 @@ namespace knesset_app
 
 
 
-            //Invited field
+            //Invited field - performing an AND relation between given invited list
             char[] nameListSplit = new char[] { ',' };
 
             if (!string.IsNullOrWhiteSpace(tbInvited.Text))
@@ -97,7 +97,7 @@ namespace knesset_app
 
 
 
-            //Persences field
+            //Presences field - performing an AND relation between given presences list
             if (string.IsNullOrWhiteSpace(tbPersence.Text) == false)
             {
                 string[] split = tbPersence.Text.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
@@ -277,7 +277,7 @@ namespace knesset_app
         }
 
 
-        // add Phrase given by user to "Phrase" table in DB
+        // Add  given Phrase input to "Phrase" table in DB
         private void AddPhrase(object sender, RoutedEventArgs e)
         {
             string phraseToAdd = string.IsNullOrEmpty(cbPhraseList.Text) ? string.Empty : cbPhraseList.Text.Trim();
@@ -309,7 +309,7 @@ namespace knesset_app
         }
 
 
-        // remove Phrase given by user from "Phrase" table in DB
+        // Delete given Phrase input from "Phrase" table in DB
         private void DeletePhrase(object sender, RoutedEventArgs e)
         {
             if (cbPhraseList.SelectedIndex == -1) return;
@@ -334,12 +334,13 @@ namespace knesset_app
             PhraseSelectionChanged();
         }
 
+        // handels the enabling of "add\remove" buttons in Phrase search tab
         private void PhraseSelectionChanged()
         {
             object selectedItem = cbPhraseList.SelectedItem;
             if (selectedItem == null)
             {
-                btnAddPhrase.IsEnabled = cbPhraseList.Text.Length > 0;
+                btnAddPhrase.IsEnabled = cbPhraseList.Text.Length > 0; //checks if there's an input in text field
                 btnRemovePhrase.IsEnabled = false;
             }
             else
@@ -349,15 +350,18 @@ namespace knesset_app
             }
         }
 
+
+        //Open selected protocol from MetaData search listbox
         private void OpenChosenProtocol(object sender, SelectionChangedEventArgs e)
         {
+
             if (lstResults.SelectedIndex == -1) return;
             ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(lstResults.SelectedItem as Protocol);
             chosenP.ShowDialog();
             lstResults.SelectedIndex = -1;
         }
 
-
+        //Open selected protocol from backwards or Phrase search listbox
         private void OpenChosenPhraseProtocol(object sender, SelectionChangedEventArgs e)
         {
             if (sender == null || !(sender is ListBox)) return;
@@ -369,9 +373,10 @@ namespace knesset_app
             lst.SelectedIndex = -1;
         }
 
+
+ 
         private void ClearAllSearchFields(object sender, RoutedEventArgs e)
         {
-
             // MetaData Tab
             tbProtocolTitle.Text = string.Empty;
             cbProtocolCommitte.Text = string.Empty;
@@ -379,6 +384,8 @@ namespace knesset_app
             tbPersence.Text = null;
             dpFromDate.SelectedDate = dpToDate.SelectedDate = null;
             lstResults.ItemsSource = string.Empty;
+            noResultsMessageMetaData.Visibility = Visibility.Hidden;
+
 
             // Backward Tab
             protocolName.Text = string.Empty;
@@ -388,22 +395,19 @@ namespace knesset_app
             paragraphNum.Text = null;
             wordNum.Text = null;
             lstBackwardSearchResults.ItemsSource = string.Empty;
+            noResultsMessageBackward.Visibility = Visibility.Hidden;
 
-            // Expression Tab
+
+            // Phrase Tab
             cbPhraseList.Text = string.Empty;
             cbPhraseList.SelectedIndex = -1;
             lstPhraseSearchResults.ItemsSource = string.Empty;
-
-
-            noResultsMessageMetaData.Visibility = Visibility.Hidden;
             noResultsMessagePhrase.Visibility = Visibility.Hidden;
-            noResultsMessageBackward.Visibility = Visibility.Hidden;
-
         }
 
 
 
-
+        // prevents adding non numeric input in numeric only fields
         private void NumericTxtChange(object sender, EventArgs e)
         {
             if (sender == null || !(sender is TextBox)) return;
