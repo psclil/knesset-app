@@ -368,7 +368,7 @@ namespace knesset_app
             ListBox lst = sender as ListBox;
             if (lst.SelectedIndex == -1) return;
             ParagraphMatch selectedResultItem = (ParagraphMatch)lst.SelectedItem;
-            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.InParagraph.protocol as Protocol);
+            ProtocolDisplayWindow chosenP = new ProtocolDisplayWindow(selectedResultItem.InParagraph.protocol, selectedResultItem.InParagraph);
             chosenP.ShowDialog();
             lst.SelectedIndex = -1;
         }

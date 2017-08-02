@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Column="0">פרוטוקולים:</Label>
-        <ListBox Grid.Row="1" Grid.Column="0" SelectionMode="Extended" ItemsSource="{Binding AllProtocols}" Name="ProtocolsBox" ItemTemplate="{StaticResource ProtocolDisplay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+        <ListBox Grid.Row="1" Grid.Column="0" SelectionMode="Extended" ItemsSource="{Binding AllProtocols}" Name="ProtocolsBox" ItemTemplate="{StaticResource ProtocolDisplay}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
         <StackPanel Orientation="Horizontal" Grid.Column="1">
             <Label Grid.Column="1">קבוצות מילים:</Label>

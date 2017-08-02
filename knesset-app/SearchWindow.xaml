@@ -72,7 +72,8 @@
                 </StackPanel>
                 <Button Name="btnBackwardsSearch" Content="חפש" Width="200" Click="BackwardsSearch" Grid.Column="1" Grid.Row="4" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <Button Name ="btnClearSearchBackward" Content="נקה" Width="100"  Grid.Row="4" Grid.Column="2" Click="ClearAllSearchFields" Margin="0,12,0,12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
-                <ListBox Name="lstBackwardSearchResults" SelectionChanged="OpenChosenPhraseProtocol" Grid.ColumnSpan="4" Grid.Row="5" ItemTemplate="{StaticResource PhraseDisplay}" />
+                <ListBox Name="lstBackwardSearchResults" SelectionChanged="OpenChosenPhraseProtocol" Grid.ColumnSpan="4" Grid.Row="5" ItemTemplate="{StaticResource PhraseDisplay}"
+                         HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                 <TextBlock Name="noResultsMessageBackward" Grid.Row="4" Grid.Column="0" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="198" />
             </Grid>
         </TabItem>
@@ -152,7 +153,8 @@
                     <Button Name="btnAddPhrase" Content="הוסף" IsEnabled="False" Grid.Row="1" Grid.Column="0" Width="75" Click="AddPhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboActionBtn}"/>
                     <Button Name='btnRemovePhrase' Content="הסר" IsEnabled="False" Grid.Row="1" Grid.Column="1" Width="75" Click="DeletePhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboDeleteBtn}"/>
                 </Grid>
-                <ListBox Name="lstPhraseSearchResults" ItemTemplate="{StaticResource PhraseDisplay}" Grid.ColumnSpan="4" Grid.Row="3"  Margin="0,4,0,4" SelectionChanged="OpenChosenPhraseProtocol"/>
+                <ListBox Name="lstPhraseSearchResults" ItemTemplate="{StaticResource PhraseDisplay}" Grid.ColumnSpan="4" Grid.Row="3"  Margin="0,4,0,4" SelectionChanged="OpenChosenPhraseProtocol"
+                         HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                 <TextBlock Name="noResultsMessagePhrase" Grid.Row="2" Grid.Column="0" Text="לא נמצאו תוצאות" FontWeight="DemiBold" Foreground="Red" Visibility="Hidden" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="184" />
 
 
