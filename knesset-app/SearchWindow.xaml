@@ -150,7 +150,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50*"/>
                     </Grid.RowDefinitions>
-                    <Button Name="btnAddPhrase" Content="הוסף" IsEnabled="False" Grid.Row="1" Grid.Column="0" Width="75" Click="AddPhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboActionBtn}"/>
+                    <Button Name="btnAddPhrase" Content="שמור ביטוי
+                            " IsEnabled="False" Grid.Row="1" Grid.Column="0" Width="75" Click="AddPhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboActionBtn}"/>
                     <Button Name='btnRemovePhrase' Content="הסר" IsEnabled="False" Grid.Row="1" Grid.Column="1" Width="75" Click="DeletePhrase" Margin="0,0,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboDeleteBtn}"/>
                 </Grid>
                 <ListBox Name="lstPhraseSearchResults" ItemTemplate="{StaticResource PhraseDisplay}" Grid.ColumnSpan="4" Grid.Row="3"  Margin="0,4,0,4" SelectionChanged="OpenChosenPhraseProtocol"
