@@ -202,7 +202,7 @@ namespace knesset_app
                              );
             }
 
-            var results = searchedWords.Include("paragraph.words").ToList().Select(w=>new ParagraphMatch(w.paragraph,w,new List<string> { w.word })).ToList();
+            var results = searchedWords.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList().Select(w=>new ParagraphMatch(w.paragraph,w,new List<string> { w.word })).ToList();
 
             // Display results
             if (results.Count > 0)
@@ -259,7 +259,7 @@ namespace knesset_app
             }
 
             // fetch results
-            var resultsRaw = selecetedExpression.Include("paragraph").Include("paragraph.words").ToList();
+            var resultsRaw = selecetedExpression.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList();
             // highlight search phrase and create a result snippet for each result
             var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
