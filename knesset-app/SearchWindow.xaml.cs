@@ -16,13 +16,13 @@ namespace knesset_app
     /// </summary>
     public partial class SearchWindow : Window
     {
-        int MAX_COMBOXLIST = 1000;
+        int MAX_DISPLAY_RECORD = 1000;
         KnessetContext context = new KnessetContext();
 
 
         public SearchWindow()
         {
-            Mouse.OverrideCursor = Cursors.Wait;
+            Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while intialize window
             try
             {
                 InitializeComponent();
@@ -39,7 +39,7 @@ namespace knesset_app
 
         private void PopulateCommitteeCombobox()
         {
-            cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_COMBOXLIST).ToList();
+            cbProtocolCommitte.ItemsSource = context.Committees.Take(MAX_DISPLAY_RECORD).ToList();
             cbProtocolCommitte.DisplayMemberPath = "c_name";
             cbProtocolCommitte.SelectedValuePath = "c_name";
 
@@ -47,7 +47,7 @@ namespace knesset_app
 
         private void PopulatePhraseCombobox()
         {
-            cbPhraseList.ItemsSource = context.Phrases.Take(MAX_COMBOXLIST).ToList();
+            cbPhraseList.ItemsSource = context.Phrases.Take(MAX_DISPLAY_RECORD).ToList();
             cbPhraseList.DisplayMemberPath = "phrase";
             cbPhraseList.SelectedValuePath = "phrase";
         }
@@ -62,7 +62,8 @@ namespace knesset_app
             noResultsMessageMetaData.Visibility = Visibility.Hidden;
             IQueryable<Protocol> relevantProtocols = context.Protocols;
 
-            Mouse.OverrideCursor = Cursors.Wait;
+            
+            Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while searching & preparing results
             try
             {
             string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
@@ -141,7 +142,7 @@ namespace knesset_app
                     noResultsMessageMetaData.Visibility = Visibility.Visible;
                 }
             }
-            finally
+            finally //set mouse cursor back to normal
             {
                 Mouse.OverrideCursor = null;
             }
@@ -160,7 +161,7 @@ namespace knesset_app
             IQueryable<ParagraphWord> searchedWords;
             string selectedProcotocolName = string.Empty;
 
-            Mouse.OverrideCursor = Cursors.Wait;
+            Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while searching & preparing results
             try
             {
                 //Search with word's location parameters
@@ -187,7 +188,6 @@ namespace knesset_app
                                      i.pr_title.Contains(selectedProcotocolName)
                                      select p
                                  );
-
                 }
 
                 //Search with Speaker parameters
@@ -224,7 +224,8 @@ namespace knesset_app
                                  );
                 }
 
-                var results = searchedWords.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList().Select(w => new ParagraphMatch(w.paragraph, w, new List<string> { w.word })).ToList();
+                // preparing results and limit the number of results to MAX_DISPLAY_RECORD
+                var results = searchedWords.Take(MAX_DISPLAY_RECORD).Include("paragraph.words").ToList().Select(w => new ParagraphMatch(w.paragraph, w, new List<string> { w.word })).ToList();
 
                 // Display results
                 if (results.Count > 0)
@@ -239,7 +240,7 @@ namespace knesset_app
                 }
 
             }
-            finally
+            finally //set mouse cursor back to normal
             {
                 Mouse.OverrideCursor = null;
             }
@@ -253,7 +254,7 @@ namespace knesset_app
             //reset\hide "No results" message
             noResultsMessagePhrase.Visibility = Visibility.Hidden;
 
-            Mouse.OverrideCursor = Cursors.Wait;
+            Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while searching & preparing results
             try
             {
                 if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
@@ -292,7 +293,7 @@ namespace knesset_app
                 }
 
                 // fetch results
-                var resultsRaw = selecetedExpression.Take(MAX_COMBOXLIST).Include("paragraph.words").ToList();
+                var resultsRaw = selecetedExpression.Take(MAX_DISPLAY_RECORD).Include("paragraph.words").ToList();
                 // highlight search phrase and create a result snippet for each result
                 var results = resultsRaw.Select(x => new ParagraphMatch(x.paragraph, x, searchWords)).ToList();
 
@@ -309,7 +310,7 @@ namespace knesset_app
                 }
 
             }
-            finally
+            finally //set mouse cursor back to normal
             {
                 Mouse.OverrideCursor = null;
             }
