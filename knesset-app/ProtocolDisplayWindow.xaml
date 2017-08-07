@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:db="clr-namespace:knesset_app.DBEntities"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="{Binding pr_title}" Style="{StaticResource KnessetWindow}"
         Loaded="Window_Loaded"
@@ -11,6 +12,13 @@
     <Window.DataContext>
         <db:Protocol/>
     </Window.DataContext>
+    <Window.Resources>
+        <CollectionViewSource x:Key="paragraphs" Source="{Binding paragraphs}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="pg_number" Direction="Ascending"></scm:SortDescription>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -19,7 +27,7 @@
         <Border Background="#f4f4f4">
             <ContentControl Padding="8" Grid.Row="0" ContentTemplate="{StaticResource ProtocolDisplayFull}" Content="{Binding}" Margin="8 8 8 0"/>
         </Border>
-        <ListBox Name="lstParagraphs" ItemTemplate="{StaticResource ParagraphDisplay}" ItemsSource="{Binding paragraphs}"
+        <ListBox Name="lstParagraphs" ItemTemplate="{StaticResource ParagraphDisplay}" ItemsSource="{Binding Source={StaticResource paragraphs}}"
                  Grid.Row="1" HorizontalContentAlignment="Stretch" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
     </Grid>
 </Window>
