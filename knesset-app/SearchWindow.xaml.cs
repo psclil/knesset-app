@@ -104,7 +104,7 @@ namespace knesset_app
 
                     foreach (string temps in split)
                     {
-                        relevantProtocols = relevantProtocols.Where(x => x.invitations.Any(i => i.pn_name == temps));
+                        relevantProtocols = relevantProtocols.Where(x => x.invitations.Any(i => i.pn_name.Contains(temps)));
                     }
                 }
 
@@ -121,7 +121,7 @@ namespace knesset_app
 
                     foreach (string temps in split)
                     {
-                        relevantProtocols = relevantProtocols.Where(x => x.persence.Any(i => i.pn_name == temps));
+                        relevantProtocols = relevantProtocols.Where(x => x.persence.Any(i => i.pn_name.Contains(temps)));
                     }
                 }
 
@@ -330,6 +330,18 @@ namespace knesset_app
                 cbPhraseList.Text = string.Empty;
                 return;
             }
+            char[] nameListSplit = new char[] { ' ' };
+            string[] split = phraseToAdd.Split(nameListSplit, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Trim();
+            }
+            //limits the numbers of words in the phrase
+            if (split.Length >= 6)
+            {
+                MessageBox.Show("יותר מידי מילים בביטוי");
+                return;
+            }
             try
             {
                 Phrase existing = context.Phrases.Find(phraseToAdd);
@@ -361,6 +373,7 @@ namespace knesset_app
             context.SaveChanges();
             cbPhraseList.SelectedIndex = -1;
             PopulatePhraseCombobox();
+            PhraseSelectionChanged();
 
         }
 

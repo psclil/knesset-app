@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:knesset_app"
         xmlns:db="clr-namespace:knesset_app.DBEntities"
         mc:Ignorable="d"
-        Title="AddGroupWindow" Style="{StaticResource KnessetWindow}">
+        Title="הוספת קבוצה חדשה" Style="{StaticResource KnessetWindow}">
     <Grid Margin="8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
