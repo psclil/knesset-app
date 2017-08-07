@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using Microsoft.Win32;
 using System.Windows.Input;
+using System.Diagnostics;
+using System;
 
 namespace knesset_app
 {
@@ -58,6 +60,17 @@ namespace knesset_app
         {
             CreateIndexWindow createWin = new CreateIndexWindow();
             createWin.ShowDialog();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                // make sure no thread hangs, etc... kill the process.
+                Process currProcess = Process.GetCurrentProcess();
+                currProcess.Kill();
+            }
+            catch (Exception) { }
         }
     }
 }
