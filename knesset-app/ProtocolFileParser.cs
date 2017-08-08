@@ -90,8 +90,9 @@ namespace knesset_app
                                 // handle the last number in the protocol title as the protocol number
                                 string pNumString = (from r in el.Element(w + "p").Elements(w + "r")
                                                      let str = r.Element(w + "t").Value.Trim()
-                                                     where Regex.IsMatch(str, "^\\d+$")
-                                                     select str).LastOrDefault() ?? "";
+                                                     let rgxMatch = Regex.Match(str, "(\\d+)\\s*$")
+                                                     where rgxMatch.Success
+                                                     select rgxMatch.Groups[1].Value).LastOrDefault() ?? "";
                                 if (int.TryParse(Regex.Replace(pNumString, "[^\\d]", ""), out tmp))
                                     ret.pr_number = tmp;
                                 // else we have a protocol without a number (?)

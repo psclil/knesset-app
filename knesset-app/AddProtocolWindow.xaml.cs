@@ -34,6 +34,7 @@ namespace knesset_app
                 fileParser = new ProtocolFileParser(fileName);
                 Protocol = fileParser.Parse(context);
                 DataContext = Protocol; // Databind the UI to the protocol object.
+                DisplayStatsDebug();
             }
             catch (Exception ex)
             {
@@ -43,6 +44,16 @@ namespace knesset_app
                     MessageBox.Show(ex.ToString(), fileName, MessageBoxButton.OK, MessageBoxImage.Asterisk);
 
             }
+        }
+
+        private void DisplayStatsDebug()
+        {
+            debugArea.Text = $@"invitations: {fileParser.newInvitations.Count}
+presence: {fileParser.newPresence.Count}
+new persons: {fileParser.newPersons.Count}
+paragraphs: {fileParser.newParagraphs.Count}
+words: {fileParser.newParagraphWords.Count}
+new words in dictionary: {fileParser.newWords.Count}";
         }
 
         private void SaveProtocol(object sender, RoutedEventArgs e)
