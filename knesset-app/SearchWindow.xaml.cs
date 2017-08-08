@@ -62,18 +62,18 @@ namespace knesset_app
             noResultsMessageMetaData.Visibility = Visibility.Hidden;
             IQueryable<Protocol> relevantProtocols = context.Protocols;
 
-            
+
             Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while searching & preparing results
             try
             {
-            string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
-            string selectedProcotocolCommitte = string.Empty;
+                string protocolTitle = string.IsNullOrEmpty(tbProtocolTitle.Text) ? string.Empty : tbProtocolTitle.Text;
+                string selectedProcotocolCommitte = string.Empty;
 
-            //getting the date fields 
-            DateTime? fromDate = dpFromDate.SelectedDate;
-            DateTime? toDate = dpToDate.SelectedDate;
+                //getting the date fields 
+                DateTime? fromDate = dpFromDate.SelectedDate;
+                DateTime? toDate = dpToDate.SelectedDate;
 
-           
+
                 //commettie field 
                 if (cbProtocolCommitte.Text != null && string.IsNullOrWhiteSpace(cbProtocolCommitte.Text) == false)
                 {
@@ -257,25 +257,18 @@ namespace knesset_app
             Mouse.OverrideCursor = Cursors.Wait; //set mouse cursor to "busy" status while searching & preparing results
             try
             {
-                if (string.IsNullOrWhiteSpace(cbPhraseList.Text))
-            {
-                MessageBox.Show("חובה להכניס ביטוי לחיפוש");
-                return;
-            }
-            char[] nameListSplit = new char[] { ' ' };
+                char[] nameListSplit = new char[] { ' ' };
 
-            string selectedExpression = cbPhraseList.Text;
-            ParagraphReader paragraphReader = new ParagraphReader();
-            List<string> searchWords = paragraphReader.ReadWords(selectedExpression);
+                string selectedExpression = cbPhraseList.Text;
+                ParagraphReader paragraphReader = new ParagraphReader();
+                List<string> searchWords = paragraphReader.ReadWords(selectedExpression);
 
-            //limits the numbers of words in the phrase search
-            if (searchWords.Count >= 6)
-            {
-                MessageBox.Show("יותר מידי מילים בביטוי לחיפוש");
-                return;
-            }
+                if (searchWords.Count == 0)
+                {
+                    MessageBox.Show("חובה להכניס ביטוי לחיפוש");
+                    return;
+                }
 
-           
                 string firstWord = searchWords[0];
                 IQueryable<ParagraphWord> selecetedExpression = context.ParagraphWords.Where(x => (x.word == firstWord));
 
