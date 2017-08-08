@@ -27,7 +27,7 @@ namespace knesset_app
                 lastWordInMatch = firstWordInMatch.word_number + searchWords.Count + MAX_WORDS_PADDING,
                 spaceFillerRead = 0, charsRead = 0;
             // some general ui elements:
-            Span content = new Span(new Run(string.Format("{0}: ", paragraph.pn_name)) { FontWeight = FontWeights.UltraBold, FontStyle= FontStyles.Italic }); // add the speaker name
+            Span content = new Span(new Run(string.Format("{0}: ", paragraph.pn_name)) { FontWeight = FontWeights.DemiBold, FontStyle= FontStyles.Italic }); // add the speaker name
             if (firstIncludeWord >= 0)
                 content.Inlines.Add(new Run("..."));  // mark this as a snippet
             ReadState state = ReadState.Ignore; // we ignore content until we reach firstIncludeWord
