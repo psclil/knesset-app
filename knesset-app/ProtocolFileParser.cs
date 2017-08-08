@@ -172,7 +172,7 @@ namespace knesset_app
                     case ProtocolState.Subject:
                         // after the subject heading we expect the actual protocol to start.
                         state = ProtocolState.Talking;
-                        break;
+                        goto case ProtocolState.Talking;
                     case ProtocolState.Talking:
                         if (currentSpeaker != null && el.Name == w + "p")
                         {
@@ -180,10 +180,11 @@ namespace knesset_app
                             string paragraphContent = ReadParagraph(el);
                             AddParagraph(ret, currentSpeaker, paragraphContent, context);
                         }
-                        else if (IsCustomXml(el, "יור") || IsCustomXml(el, "דובר") || IsCustomXml(el, "דובר_המשך") || IsCustomXml(el, "אורח"))
+                        else if (ContainsCustomXml(el, "יור") || ContainsCustomXml(el, "דובר") || ContainsCustomXml(el, "דובר_המשך") || ContainsCustomXml(el, "אורח"))
                         {
+                            var contentElem = (el.Name == w + "p") ? el.Element(w+ "customXml") : el.Element(w + "p");
                             // this is a new speaker starting to talk
-                            string sprekerName = ReadParagraph(el.Element(w + "p"));
+                            string sprekerName = ReadParagraph(contentElem);
                             if (sprekerName.EndsWith(":"))
                                 sprekerName = sprekerName.Substring(0, sprekerName.Length - 1);
                             currentSpeaker = FindOrAddPerson(sprekerName);
